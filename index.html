@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLT · Sala Técnica Hapvida</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════
+       TOKENS
+    ═══════════════════════════════ */
+    :root {
+      --blue-900:#002B80; --blue-700:#0050C8; --blue-600:#1462D4;
+      --blue-d:rgba(0,80,200,.10); --blue-g:rgba(0,80,200,.22);
+      --blue-50:#EFF5FF; --blue-100:#D6E6FF;
+
+      --orange-700:#E84500; --orange-600:#F05000;
+      --orange-d:rgba(240,80,0,.12); --orange-50:#FFF2EA;
+
+      --green:#047857; --green-d:rgba(4,120,87,.12);
+      --amber:#B45309; --amber-d:rgba(180,83,9,.12);
+      --red:#C0200A;   --red-d:rgba(192,32,10,.12);
+      --cyan:#0878A0;  --cyan-d:rgba(8,120,160,.12);
+      --purple:#6530C8;--purple-d:rgba(101,48,200,.12);
+      --slate:#4A6080; --slate-d:rgba(74,96,128,.14);
+
+      --ink:#0C1824; --text:#28404E; --muted:#5C788A; --ghost:#98AEBC;
+      --line:#D4E2EE; --line-2:#EAF1F8;
+      --bg:#EDF2FA; --surface:#FFFFFF; --sf2:#F5F9FF;
+
+      --night:#071120; --nb:rgba(255,255,255,.07); --nb2:rgba(255,255,255,.04);
+      --nt:rgba(255,255,255,.90); --nm:rgba(255,255,255,.45);
+
+      --s-fazer:#1D6FEB; --s-fazendo:#6530C8; --s-parado:#C0200A;
+      --s-ast:#A06200;   --s-aobras:#0878A0;
+      --s-concluido:#047857; --s-cancelado:#4A6080;
+
+      --r:10px; --r-lg:14px; --r-xl:18px;
+      --sh-sm:0 2px 8px rgba(12,24,36,.07);
+      --sh:0 6px 22px rgba(12,24,36,.10);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-font-smoothing:antialiased}
+    body{font-family:"Space Grotesk",system-ui,sans-serif;font-size:14px;background:var(--bg);color:var(--text);line-height:1.55}
+    button,input,select,textarea{font-family:inherit}
+
+    /* ═══ LAYOUT ═══ */
+    .shell{display:grid;grid-template-columns:256px 1fr;min-height:100vh}
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar{background:var(--night);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+    .sidebar::before{content:"";position:absolute;bottom:-90px;left:-90px;width:300px;height:300px;background:radial-gradient(circle,rgba(240,80,0,.20) 0%,transparent 62%);pointer-events:none;z-index:0}
+    .sidebar>*{position:relative;z-index:1}
+    .brand{padding:18px 16px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--nb)}
+    .brand-mark{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(145deg,#FF4400,#FF7A30);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:-.02em;box-shadow:0 4px 18px rgba(255,68,0,.42),0 0 0 1px rgba(255,110,50,.28)}
+    .brand-title{font-size:13.5px;font-weight:700;color:var(--nt);letter-spacing:-.01em;line-height:1}
+    .brand-title span{color:#FF7A30}
+    .brand-sub{font-size:11px;color:var(--nm);margin-top:3px}
+    .nav-section{padding:14px 8px 2px}
+    .nav-label{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--nm);padding:0 8px;margin-bottom:3px}
+    .nav-list{display:flex;flex-direction:column;gap:1px}
+    .nav-item{appearance:none;border:none;background:transparent;color:rgba(255,255,255,.60);padding:8px 10px;border-radius:var(--r);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:9px;width:100%;text-align:left;transition:background .13s,color .13s;position:relative}
+    .nav-icon{font-size:15px;width:18px;text-align:center;flex-shrink:0;line-height:1}
+    .nav-item:hover{background:var(--nb2);color:rgba(255,255,255,.85)}
+    .nav-item.active{background:rgba(255,255,255,.10);color:#fff;font-weight:600}
+    .nav-item.active::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--orange-600);border-radius:0 2px 2px 0}
+    .sidebar-footer{margin-top:auto;padding:12px 14px;border-top:1px solid var(--nb)}
+    .footer-txt{font-size:11.5px;color:var(--nm);line-height:1.7}
+    .footer-txt strong{color:rgba(255,255,255,.75);font-weight:600}
+
+    /* ═══ CONTENT ═══ */
+    .content{overflow:auto;min-width:0}
+    .view{display:none;padding:22px;min-height:100vh}
+    .view.active{display:block}
+
+    /* ═══ TOPBAR ═══ */
+    .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+    .page-heading h2{font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1.1}
+    .page-heading p{font-size:12.5px;color:var(--muted);margin-top:4px}
+    .topbar-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+    /* ═══ BUTTONS ═══ */
+    .btn{appearance:none;border:none;border-radius:var(--r);padding:7px 14px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;transition:all .14s ease}
+    .btn-primary{background:var(--orange-700);color:#fff;box-shadow:0 4px 14px rgba(232,69,0,.28)}
+    .btn-primary:hover{background:#CC3B00;box-shadow:0 6px 20px rgba(232,69,0,.40);transform:translateY(-1px)}
+    .btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--line)}
+    .btn-ghost:hover{border-color:var(--blue-600);color:var(--blue-700);background:var(--blue-50)}
+    .btn-sm{padding:4px 9px;font-size:11.5px}
+    .btn-danger{background:var(--red-d);color:var(--red);border:1px solid rgba(192,32,10,.18)}
+
+    /* ═══ PILLS ═══ */
+    .pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap;background:var(--blue-d);color:var(--blue-700);border:1px solid rgba(0,80,200,.16)}
+    .pill.neutral{background:var(--sf2);color:var(--muted);border-color:var(--line)}
+
+    /* ═══ KPI ═══ */
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .kpi-grid-7{grid-template-columns:repeat(7,1fr)}
+    .kpi-grid-7 .kpi-value{font-size:36px}
+    .kpi-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 14px;box-shadow:var(--sh-sm);position:relative;overflow:hidden;transition:box-shadow .18s,border-color .18s}
+    .kpi-card:hover{box-shadow:var(--sh);border-color:rgba(0,80,200,.22)}
+    .kpi-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue-700),var(--orange-600));opacity:0;transition:opacity .2s}
+    .kpi-card:hover::after{opacity:1}
+    .kpi-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.10em;color:var(--muted);margin-bottom:9px}
+    .kpi-value{font-size:48px;font-weight:800;letter-spacing:-.07em;color:var(--ink);line-height:1}
+
+    /* ═══ PANEL ═══ */
+    .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-sm);padding:16px;margin-bottom:14px}
+    .panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .panel-title{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+
+    /* ═══ FILTERS ═══ */
+    .filter-bar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;padding:11px;background:var(--sf2);border:1px solid var(--line-2);border-radius:var(--r-lg)}
+    .toolbar{display:flex;gap:9px;align-items:center;justify-content:space-between;margin-bottom:12px;padding:9px 11px;background:var(--sf2);border:1px solid var(--line-2);border-radius:var(--r-lg)}
+    .field{display:flex;flex-direction:column;gap:4px;min-width:150px}
+    .field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+    select,input,textarea{width:100%;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:7px 9px;font-size:13px;color:var(--ink);font-family:inherit;outline:none;transition:border-color .14s,box-shadow .14s}
+    select:focus,input:focus,textarea:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-d)}
+    select:hover,input:hover{border-color:var(--ghost)}
+    .search-input{min-width:260px;flex:1}
+
+    /* ═══ CHAVE BADGE ═══ */
+    .chave-badge{font-family:"DM Mono",monospace;font-size:10.5px;font-weight:500;color:var(--blue-700);background:var(--blue-100);border:1px solid rgba(0,80,200,.22);padding:4px 8px;border-radius:7px;letter-spacing:.04em;white-space:nowrap;display:inline-block}
+    .chave-badge.small{font-size:9.5px;padding:2px 6px}
+
+    /* ═══ CHAVE VISUAL (legend) ═══ */
+    .key-format{display:flex;align-items:center;gap:3px;font-family:"DM Mono",monospace;font-size:17px;font-weight:600;flex-wrap:wrap}
+    .kf-sep{color:var(--ghost);font-weight:400}
+    .kf-seg{padding:5px 9px;border-radius:8px;letter-spacing:.02em;font-size:15px}
+    .kf-seq{background:#E8F0FF;color:#003A99} .kf-yr{background:#E0ECFF;color:#001F8A}
+    .kf-tip{background:#FFF0E5;color:#963000} .kf-uni{background:#E8FFF5;color:#005030}
+    .kf-cls{background:#FFF8E5;color:#7A4200}
+    .kf-uf{background:#E5F2FF;color:#003D7A}
+    .key-legend-desc{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .kld-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted)}
+    .kld-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+    /* ═══ LEGEND TABLES ═══ */
+    .legend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+    .legend-card{background:var(--sf2);border:1px solid var(--line-2);border-radius:var(--r-lg);padding:12px}
+    .legend-card h5{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
+    .legend-table{width:100%;border-collapse:collapse;font-size:12px}
+    .legend-table td{padding:4px 6px;border-bottom:1px solid var(--line-2)}
+    .legend-table tr:last-child td{border-bottom:none}
+    .legend-table td:first-child{font-family:"DM Mono",monospace;font-weight:600;font-size:11px;color:var(--blue-700);white-space:nowrap;width:1%}
+    .legend-table td:last-child{color:var(--text)}
+
+    /* ═══ KEY PREVIEW (nova obra) ═══ */
+    .key-preview-box{background:var(--blue-50);border:1px solid rgba(0,80,200,.18);border-radius:var(--r-lg);padding:14px 16px;text-align:center;margin-top:4px}
+    .kpb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.10em;color:var(--blue-700);margin-bottom:7px}
+    .kpb-key{font-family:"DM Mono",monospace;font-size:20px;font-weight:600;color:var(--ink);letter-spacing:.06em;margin-bottom:4px;word-break:break-all}
+    .kpb-hint{font-size:11px;color:var(--muted)}
+
+    /* ═══ KANBAN ═══ */
+    .kanban{cursor:grab}.kanban.dragging{cursor:grabbing;user-select:none}
+    .kanban{display:grid;grid-template-columns:repeat(7,minmax(228px,1fr));gap:10px;overflow-x:auto;padding-bottom:6px}
+    .kanban-col{--cc:var(--blue-700);background:var(--sf2);border:1px solid var(--line);border-radius:var(--r-lg);min-height:420px;display:flex;flex-direction:column;overflow:hidden}
+    .kanban-head{padding:11px 12px 9px;display:flex;justify-content:space-between;align-items:center;border-top:3px solid var(--cc);border-bottom:1px solid var(--line);background:var(--surface)}
+    .kh-label{font-size:11.5px;font-weight:700;color:var(--text)}
+    .kh-count{background:var(--cc);color:#fff;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;min-width:20px;text-align:center}
+    .kanban-body{padding:8px;display:flex;flex-direction:column;gap:7px;flex:1}
+    .task{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--cc);border-radius:var(--r);padding:11px;cursor:pointer;transition:box-shadow .14s,transform .14s}
+    .task:hover{box-shadow:var(--sh);transform:translateY(-1px)}
+    .task-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:6px}
+    .task-code{font-family:"DM Mono",monospace;font-size:10px;color:var(--muted);font-weight:500}
+    .task-title{font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:7px}
+    .task-attrs{display:flex;flex-direction:column;gap:2.5px;font-size:11.5px;color:var(--muted)}
+    .task-ev-total{margin-top:9px;padding:8px 10px;background:var(--green-d);border:1px solid rgba(4,120,87,.2);border-radius:8px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--green);display:flex;flex-direction:column;gap:2px}
+    .task-ev-total strong{font-size:15px;font-weight:800;letter-spacing:-.02em;font-family:"DM Mono",monospace;text-transform:none}
+    .task-pendencia{margin-top:7px;padding:8px 10px;background:var(--amber-d);border:1px solid rgba(180,83,9,.22);border-radius:8px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--amber);display:flex;flex-direction:column;gap:3px}
+    .task-pendencia span{font-size:11.5px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--text);line-height:1.35}
+    .priority{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700}
+    .priority.alta{background:var(--red-d);color:var(--red)}
+    .priority.media{background:var(--amber-d);color:var(--amber)}
+    .priority.baixa{background:var(--green-d);color:var(--green)}
+
+    /* ═══ TABLE ═══ */
+    .table-wrap{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface)}
+    .table-scroll{overflow:auto;max-height:calc(100vh - 330px)}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead th{padding:9px 11px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);background:var(--sf2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2;white-space:nowrap}
+    tbody td{padding:10px 11px;border-bottom:1px solid var(--line-2);color:var(--text);vertical-align:middle}
+    tbody tr:last-child td{border-bottom:none}
+    tbody tr:hover td{background:var(--blue-50)}
+    .td-name{font-weight:600;color:var(--ink);min-width:250px}
+    .td-code{font-family:"DM Mono",monospace;font-size:11px;color:var(--ghost)}
+    .td-loc{color:var(--muted);font-size:12.5px;white-space:nowrap}
+    .action-btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--blue-700);padding:5px 9px;border-radius:8px;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .14s;white-space:nowrap}
+    .action-btn:hover{background:var(--blue-700);border-color:var(--blue-700);color:#fff}
+
+    /* ═══ DRAWERS ═══ */
+    .overlay{position:fixed;inset:0;background:rgba(7,17,32,.52);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:none;align-items:stretch;justify-content:flex-end;z-index:100}
+    .overlay.open{display:flex}
+    .drawer{width:min(960px,95vw);height:100vh;background:var(--surface);box-shadow:-20px 0 56px rgba(7,17,32,.22);display:flex;flex-direction:column;overflow:hidden;animation:drIn .18s ease-out}
+    @keyframes drIn{from{transform:translateX(12px);opacity:.9}to{transform:none;opacity:1}}
+    .drawer-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-shrink:0;background:var(--sf2)}
+    .drawer-title{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.04em;line-height:1.1}
+    .drawer-sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+    .drawer-body{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+    .close-btn{appearance:none;border:1px solid var(--line);background:var(--surface);width:34px;height:34px;border-radius:var(--r);cursor:pointer;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .14s;flex-shrink:0}
+    .close-btn:hover{background:var(--red-d);border-color:rgba(192,32,10,.2);color:var(--red)}
+
+    /* ═══ EV SUMMARY ═══ */
+    .ev-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+    .ev-card{background:var(--blue-d);border:1px solid rgba(0,80,200,.16);border-radius:var(--r-lg);padding:12px 14px}
+    .ev-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue-700);margin-bottom:5px}
+    .ev-value{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.03em}
+
+    /* ═══ SECTION BLOCK ═══ */
+    .sblock{background:var(--sf2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
+    /* ── FORM SECTIONS (estilo cadastro) ── */
+    .fsec{margin-bottom:18px}
+    .fsec:last-child{margin-bottom:0}
+    .fsec-head{display:flex;align-items:center;gap:8px;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid var(--line-2)}
+    .fsec-ico{font-size:15px;line-height:1}
+    .fsec-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--blue-700)}
+    .fsec-req{color:var(--orange-700);font-weight:800;font-size:13px}
+    .ffield{display:flex;flex-direction:column}
+    .ffield label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+    .ffield input,.ffield select,.ffield textarea{border:1px solid var(--line);border-radius:var(--r);background:var(--sf2);padding:10px 12px;font-family:inherit;font-size:13.5px;color:var(--ink);transition:border-color .13s,box-shadow .13s,background .13s;width:100%}
+    .ffield input:focus,.ffield select:focus,.ffield textarea:focus{outline:none;border-color:var(--blue-600);background:var(--surface);box-shadow:0 0 0 3px var(--blue-d)}
+    .ffield textarea{resize:vertical;min-height:64px}
+    .fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:620px){.fgrid2{grid-template-columns:1fr}}
+    .obra-sel-card{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--blue-d);border:1px solid rgba(0,80,200,.20);border-radius:var(--r-lg)}
+    /* ── ANALISTA CHIPS ── */
+    .anal-chips-wrap{display:flex;flex-wrap:wrap;gap:7px}
+    .anal-chip{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--slate);cursor:pointer;transition:all .13s;white-space:nowrap}
+    .anal-chip:hover{border-color:var(--blue-600);color:var(--blue-700);transform:translateY(-1px)}
+    .anal-chip.on{background:var(--blue-700);border-color:var(--blue-700);color:#fff;box-shadow:0 4px 12px rgba(0,80,200,.22)}
+    .sblock h4{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:11px;letter-spacing:-.01em}
+    .cost-row{display:grid;grid-template-columns:1.9fr 1fr;gap:7px;align-items:center;margin-bottom:7px}
+    .cost-label{font-size:12px;color:var(--text);font-weight:500}
+
+    /* ═══ CHIPS ═══ */
+    .chip-list{display:flex;flex-wrap:wrap;gap:5px}
+    .chip-item{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 9px;font-size:11.5px;color:var(--text);font-weight:500}
+    .add-row{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line-2)}
+
+
+    /* ── SPRINT TABS & KPI SPRINT ── */
+    .sprint-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--sh-sm)}
+    .sprint-tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .sprint-tab{appearance:none;border:1px solid var(--line);background:var(--sf2);border-radius:999px;padding:5px 14px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .13s}
+    .sprint-tab:hover{border-color:var(--blue-600);color:var(--blue-700)}
+    .sprint-tab.on{background:var(--blue-700);border-color:var(--blue-700);color:#fff;box-shadow:0 4px 12px rgba(0,80,200,.22)}
+    .kpi-sprint-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+    .ksc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px 12px;box-shadow:var(--sh-sm);position:relative;overflow:hidden;transition:box-shadow .18s;border-left:4px solid var(--cc,var(--line))}
+    .ksc:hover{box-shadow:var(--sh)}
+    .ksc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:6px}
+    .ksc-val{font-size:36px;font-weight:900;letter-spacing:-.06em;color:var(--ink);line-height:1;margin-bottom:5px}
+    .ksc-val.text{font-size:18px;font-weight:800;letter-spacing:-.03em;color:var(--green)}
+    .ksc-subs{display:flex;flex-direction:column;gap:3px;margin-top:4px}
+    .ksc-ok{font-size:11px;font-weight:600;color:var(--green)}
+    .ksc-late{font-size:11px;font-weight:600;color:var(--red)}
+    .ksc-info{font-size:11px;color:var(--muted)}
+    @media(max-width:1100px){.kpi-sprint-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:760px){.kpi-sprint-grid{grid-template-columns:repeat(2,1fr)}}
+
+    /* ── LISTA VIEW ── */
+    .view-toggle{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;flex-shrink:0}
+    .vt-btn{appearance:none;border:none;background:transparent;padding:6px 12px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .13s;display:flex;align-items:center;gap:5px}
+    .vt-btn.active{background:var(--blue-700);color:#fff}
+    .vt-btn:not(.active):hover{background:var(--blue-50);color:var(--blue-700)}
+    .lista-demandas{overflow:auto}
+    .lista-table{width:100%;border-collapse:collapse;font-size:13px}
+    .lista-table thead th{padding:9px 11px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--sf2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2;white-space:nowrap}
+    .lista-table tbody td{padding:10px 11px;border-bottom:1px solid var(--line-2);color:var(--text);vertical-align:middle}
+    .lista-table tbody tr:last-child td{border-bottom:none}
+    .lista-table tbody tr:hover td{background:var(--blue-50);cursor:pointer}
+    .lista-status-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+    .lista-status-dot::before{content:'';width:8px;height:8px;border-radius:50%;flex-shrink:0}
+    .lista-pend{font-size:11px;color:var(--amber);font-weight:600}
+    /* ═══ PROJ ACCORDION ═══ */
+    .proj-row{border:1px solid var(--line);border-radius:var(--r);margin-bottom:7px;overflow:hidden;background:var(--surface);transition:border-color .14s,box-shadow .14s}
+    .proj-row:last-child{margin-bottom:0}
+    .proj-row.open{border-color:rgba(0,80,200,.32);box-shadow:var(--sh-sm)}
+    .proj-row.checked{border-color:rgba(0,80,200,.22)}
+    .proj-head{display:flex;align-items:center;gap:11px;padding:11px 13px;user-select:none}
+    .proj-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .14s;background:var(--surface);cursor:pointer}
+    .proj-check:hover{border-color:var(--blue-600)}
+    .proj-check.on{background:var(--blue-700);border-color:var(--blue-700)}
+    .proj-check.on::after{content:"✓";color:#fff;font-size:13px;font-weight:800;line-height:1}
+    .proj-code{font-family:"DM Mono",monospace;font-size:12px;font-weight:700;color:var(--blue-700);background:var(--blue-100);padding:3px 8px;border-radius:6px;flex-shrink:0}
+    .proj-name{font-size:13px;font-weight:600;color:var(--ink);flex:1}
+    .proj-caret-btn{appearance:none;border:none;background:transparent;cursor:pointer;padding:4px 6px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s}
+    .proj-caret-btn:hover{background:var(--blue-d)}
+    .proj-caret{color:var(--ghost);font-size:13px;transition:transform .18s;display:inline-block}
+    .proj-row.open .proj-caret{transform:rotate(180deg)}
+    .proj-body{padding:0 13px;max-height:0;overflow:hidden;transition:max-height .22s ease,padding .22s ease;border-top:0 solid var(--line-2)}
+    .proj-row.open .proj-body{max-height:340px;padding:13px;border-top:1px solid var(--line-2)}
+
+    /* ═══ BADGE ═══ */
+    .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+    .badge-blue{background:var(--blue-d);color:var(--blue-700)}
+    .badge-green{background:var(--green-d);color:var(--green)}
+    .badge-neutral{background:var(--sf2);color:var(--muted);border:1px solid var(--line)}
+
+    /* ═══ COMING SOON ═══ */
+    .coming{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:10px;text-align:center}
+    .coming-icon{font-size:44px;margin-bottom:4px}
+    .coming h3{font-size:17px;font-weight:700;color:var(--muted);letter-spacing:-.02em}
+    .coming p{font-size:12.5px;max-width:300px;line-height:1.6;color:var(--ghost)}
+
+    /* ═══ EMPTY ═══ */
+    .drawer-narrow{width:min(480px,95vw)}
+    .obra-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--line-2);transition:background .12s;font-size:13px}
+    .obra-item:last-child{border-bottom:none}
+    .obra-item:hover{background:var(--blue-50)}
+    .obra-item-nome{font-weight:600;color:var(--ink);line-height:1.3}
+    .obra-item-chave{font-family:"DM Mono",monospace;font-size:10.5px;color:var(--muted);margin-top:2px}
+
+    .tr-btn{appearance:none;border:1px solid var(--line);background:var(--sf2);width:100%;text-align:left;padding:11px 13px;border-radius:var(--r);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .14s;color:var(--ink);margin-bottom:7px}
+    .tr-btn:last-child{margin-bottom:0}
+    .tr-btn:hover{transform:translateX(3px);box-shadow:var(--sh-sm);border-color:var(--line)}
+    .tr-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .tr-arrow{margin-left:auto;color:var(--ghost);font-size:15px}
+    .status-current{border-radius:var(--r-lg);padding:13px 15px;display:flex;align-items:center;gap:11px;margin-bottom:4px}
+    .sc-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+    .sc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:2px}
+    .sc-status{font-size:15px;font-weight:700}
+    .dd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .dd-field{background:var(--sf2);border:1px solid var(--line-2);border-radius:var(--r);padding:9px 11px}
+    .dd-field-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:3px}
+    .dd-field-value{font-size:13px;font-weight:600;color:var(--ink)}
+    .no-transitions{padding:14px;text-align:center;font-size:12.5px;color:var(--muted);background:var(--sf2);border-radius:var(--r);border:1px dashed var(--line)}
+    .empty{padding:18px;text-align:center;font-size:12px;color:var(--ghost);background:var(--sf2);border-radius:var(--r);border:1px dashed var(--line)}
+
+    /* ═══ GRID UTILS ═══ */
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+
+    /* ═══ SCROLLBAR ═══ */
+    ::-webkit-scrollbar{width:5px;height:5px}
+    ::-webkit-scrollbar-track{background:var(--line-2)}
+    ::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--ghost)}
+
+    /* ═══ RESPONSIVE ═══ */
+    @media(max-width:1150px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid-7{grid-template-columns:repeat(4,1fr)}.ev-summary{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.legend-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:860px){.shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.view{padding:14px}.kpi-grid,.kpi-grid-7{grid-template-columns:repeat(2,1fr)}.kpi-grid-7 .kpi-value{font-size:32px}.kanban{grid-template-columns:repeat(7,228px)}.g2,.g3,.g4,.legend-grid{grid-template-columns:1fr}.topbar{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">SLT</div>
+      <div>
+        <div class="brand-title">Sala Técnica <span>Hapvida</span></div>
+        <div class="brand-sub">Controle de Orçamentos</div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Visões</div>
+      <div class="nav-list">
+        <button class="nav-item active nav-btn" data-view="operacional"><span class="nav-icon">🗂️</span> Operacional</button>
+        <button class="nav-item nav-btn" data-view="gerencial"><span class="nav-icon">📊</span> Gerencial</button>
+        <button class="nav-item nav-btn" data-view="estrategica"><span class="nav-icon">📈</span> Estratégica</button>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Gestão</div>
+      <div class="nav-list">
+        <button class="nav-item nav-btn" data-view="obras"><span class="nav-icon">🏗️</span> Obras</button>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Sistema</div>
+      <div class="nav-list">
+        <button class="nav-item nav-btn" data-view="configuracoes"><span class="nav-icon">⚙️</span> Configurações</button>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="footer-txt"><strong id="sideObrasCount">0</strong> obras · EV único por obra<br>Chave estruturada por atributos</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <!-- OPERACIONAL -->
+    <section id="view-operacional" class="view active">
+      <div class="topbar">
+        <div class="page-heading"><h2>Visão Operacional</h2><p>Demandas organizadas por sprint e status — fluxo em tempo real da equipe.</p></div>
+        <div class="topbar-actions">
+          <span class="pill" id="activeSprintChip">Sprint 11</span>
+          <button class="btn btn-ghost">Exportar</button>
+          <button class="btn btn-primary" onclick="openNovaDemanda()">+ Nova demanda</button>
+        </div>
+      </div>
+      <div class="kpi-grid kpi-grid-7">
+        <div class="kpi-card"><div class="kpi-label">Total na Sprint</div><div class="kpi-value" id="kpiTotal">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">A Iniciar</div><div class="kpi-value" id="kpiFazer">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Em Execução</div><div class="kpi-value" id="kpiFazendo">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pausado</div><div class="kpi-value" id="kpiPausado">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Aguardando Validação</div><div class="kpi-value" id="kpiValidacao">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Concluído</div><div class="kpi-value" id="kpiConcluidas">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Cancelado</div><div class="kpi-value" id="kpiCancelado">0</div></div>
+      </div>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+          <div class="filter-bar" style="margin-bottom:0;flex:1;min-width:0">
+            <div class="field"><label>Sprint</label><select id="sprintFilter"></select></div>
+            <div class="field"><label>Analista</label><select id="analistaFilter"></select></div>
+            <div class="field"><label>Tipo de atividade</label><select id="tipoAtividadeFilter"></select></div>
+          </div>
+          <div class="view-toggle">
+            <button class="vt-btn active" id="btnKanban" onclick="setViewMode('kanban')">⬛ Kanban</button>
+            <button class="vt-btn" id="btnLista" onclick="setViewMode('lista')">☰ Lista</button>
+          </div>
+        </div>
+        <div id="kanban" class="kanban"></div>
+        <div id="listaDemandas" class="lista-demandas" style="display:none">
+          <div class="table-wrap">
+            <div class="table-scroll" style="max-height:calc(100vh - 300px)">
+              <table class="lista-table">
+                <thead>
+                  <tr>
+                    <th>Código</th><th>Obra</th><th>Tipo</th><th>Analista</th>
+                    <th>Sprint</th><th>Status</th><th>Prioridade</th><th>Prazo</th><th>Pendência</th>
+                  </tr>
+                </thead>
+                <tbody id="listaDemandasBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBRAS -->
+    <section id="view-obras" class="view">
+      <div class="topbar">
+        <div class="page-heading"><h2>Gestão de Obras</h2><p>Chave estruturada por atributos — cada obra possui EV único e pode ter múltiplas demandas.</p></div>
+        <div class="topbar-actions">
+          <span class="pill neutral" id="obraCountChip">0 obras</span>
+          <button class="btn btn-ghost">Importar base</button>
+          <button class="btn btn-primary" onclick="openNovaObra()">+ Nova obra</button>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Obras cadastradas</div><div class="kpi-value" id="totalObrasCard">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tipos de unidade</div><div class="kpi-value" id="totalTiposCard">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">Regiões</div><div class="kpi-value" id="totalRegioesCard">0</div></div>
+        <div class="kpi-card"><div class="kpi-label">EVs vinculados</div><div class="kpi-value" id="totalEVsCard">0</div></div>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <input class="search-input" id="obraSearch" type="text" placeholder="Buscar por nome, chave, cidade, UF, região, tipo…" />
+          <div style="display:flex;gap:7px">
+            <select id="ufFilter" style="min-width:120px"></select>
+            <select id="tipoFilter" style="min-width:135px"></select>
+            <select id="regiaoFilter" style="min-width:145px"></select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Chave</th><th>Cód. Orig.</th><th>Nome da Obra</th><th>Tipo</th>
+                  <th>Cidade / UF</th><th>Região</th><th>Prazo</th>
+                  <th>Classificação</th><th>Tipologia</th>
+                  <th>Área Eq. (m²)</th><th>Área Const. (m²)</th>
+                  <th>SAP</th><th>CNPJ</th><th>Endereço</th><th>EV</th>
+                </tr>
+              </thead>
+              <tbody id="obrasTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GERENCIAL -->
+    <section id="view-gerencial" class="view">
+      <div class="topbar"><div class="page-heading"><h2>Visão Gerencial</h2><p>Produção, prazos e gargalos por analista e sprint.</p></div></div>
+      <div class="panel"><div class="coming"><div class="coming-icon">📊</div><h3>Em desenvolvimento</h3><p>Será construída após a base operacional e de obras estar estável.</p></div></div>
+    </section>
+
+    <!-- ESTRATÉGICA -->
+    <section id="view-estrategica" class="view">
+      <div class="topbar"><div class="page-heading"><h2>Visão Estratégica</h2><p>CAPEX, custo/m², comparativos por região e tipo de unidade.</p></div></div>
+      <div class="panel"><div class="coming"><div class="coming-icon">📈</div><h3>Em desenvolvimento</h3><p>Será construída após os EVs estarem estruturados e preenchidos.</p></div></div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section id="view-configuracoes" class="view">
+      <div class="topbar"><div class="page-heading"><h2>Configurações</h2><p>Legenda da chave, sprints e listas de apoio do sistema.</p></div></div>
+
+      <!-- LEGENDA DA CHAVE -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Legenda da Chave Única</div>
+          <span class="pill neutral">Gerada automaticamente por atributos da obra</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px">A chave codifica os principais atributos de cada obra, garantindo identificação padronizada e facilidade de rastreamento, busca e análise.</p>
+        <div class="key-format" id="keyFormatVisual"></div>
+        <div class="key-legend-desc" id="keyLegendDesc"></div>
+        <div class="legend-grid" id="legendGrid"></div>
+      </div>
+
+      <!-- CRIAR SPRINT -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Criar Sprint</div>
+          <span class="pill neutral">Usada na visão operacional</span>
+        </div>
+        <div class="g4">
+          <div class="field"><label>Nome da sprint</label><input id="newSprintName" placeholder="Ex.: Sprint 13"></div>
+          <div class="field"><label>Data início</label><input id="newSprintStart" type="date"></div>
+          <div class="field"><label>Data fim</label><input id="newSprintEnd" type="date"></div>
+          <div class="field"><label>Status</label><select id="newSprintStatus"><option>Planejada</option><option>Ativa</option><option>Encerrada</option></select></div>
+        </div>
+        <div style="margin-top:11px"><button class="btn btn-primary" onclick="addSprint()">Criar sprint</button></div>
+        <div class="table-wrap" style="margin-top:13px">
+          <div class="table-scroll" style="max-height:240px">
+            <table>
+              <thead><tr><th>Sprint</th><th>Início</th><th>Fim</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="sprintsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTAS DE APOIO -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Listas de apoio</div>
+          <span class="pill neutral">Usadas nos cadastros e filtros</span>
+        </div>
+        <div class="g2">
+          <div class="sblock"><h4>Analistas</h4><div class="chip-list" id="analistasChips"></div><div class="add-row"><input id="newAnalistaOption" placeholder="Novo analista"><button class="btn btn-ghost btn-sm" onclick="addListItem('analistas','newAnalistaOption')">Criar</button></div></div>
+          <div class="sblock"><h4>Tipos de Unidade</h4><div class="chip-list" id="tiposUnidadeChips"></div><div class="add-row"><input id="newTipoUnidadeOption" placeholder="Novo tipo"><button class="btn btn-ghost btn-sm" onclick="addListItem('tiposUnidade','newTipoUnidadeOption')">Criar</button></div></div>
+          <div class="sblock"><h4>Classificação da Obra</h4><div class="chip-list" id="classificacoesChips"></div><div class="add-row"><input id="newClassificacaoOption" placeholder="Nova classificação"><button class="btn btn-ghost btn-sm" onclick="addListItem('classificacoes','newClassificacaoOption')">Criar</button></div></div>
+          <div class="sblock"><h4>Tipologia da Obra</h4><div class="chip-list" id="tipologiasChips"></div><div class="add-row"><input id="newTipologiaOption" placeholder="Nova tipologia"><button class="btn btn-ghost btn-sm" onclick="addListItem('tipologias','newTipologiaOption')">Criar</button></div></div>
+          <div class="sblock"><h4>Tipo de Atividade</h4><div class="chip-list" id="tiposAtividadeChips"></div><div class="add-row"><input id="newTipoAtividadeOption" placeholder="Novo tipo"><button class="btn btn-ghost btn-sm" onclick="addListItem('tiposAtividade','newTipoAtividadeOption')">Criar</button></div></div>
+          <div class="sblock"><h4>Status das Demandas</h4><div class="chip-list" id="statusChips"></div><div class="add-row"><input id="newStatusOption" placeholder="Novo status"><button class="btn btn-ghost btn-sm" onclick="addListItem('statusList','newStatusOption')">Criar</button></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- DRAWER: DEMANDA -->
+<div class="overlay" id="demandaOverlay">
+  <div class="drawer drawer-narrow">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title" id="ddTitle">Demanda</div>
+        <div class="drawer-sub" id="ddSub">Obra</div>
+      </div>
+      <button class="close-btn" onclick="closeDrawer('demandaOverlay')">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div id="ddStatusBadge"></div>
+      <div class="sblock">
+        <h4>Detalhes</h4>
+        <div class="dd-grid" id="ddDetails"></div>
+      </div>
+      <div class="sblock">
+        <h4>Mover para</h4>
+        <div id="ddTransitions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- DRAWER: EMISSÃO INICIAL -->
+<div class="overlay" id="eiOverlay">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title" id="eiTitle">Emissão Inicial</div>
+        <div class="drawer-sub" id="eiSub">Obra · Chave</div>
+      </div>
+      <button class="close-btn" onclick="closeDrawer('eiOverlay')">✕</button>
+    </div>
+    <div class="drawer-body">
+
+      <!-- ░░░ ETAPA 1 — Identificação ░░░ -->
+      <div id="eiEtapa1">
+        <!-- Obra vinculada (só modo criação) -->
+        <div class="fsec" id="eiNovaObraBlock" style="display:none">
+          <div class="fsec-head"><span class="fsec-ico">🏗</span><span class="fsec-title">Obra vinculada</span><span class="fsec-req">*</span></div>
+          <div class="ffield">
+            <label>Buscar obra</label>
+            <input id="ei_obraSearch" type="text" placeholder="Digite nome, chave ou cidade…" oninput="filtrarObrasEI()">
+          </div>
+          <div id="ei_obraList" style="margin-top:8px;max-height:200px;overflow-y:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)"></div>
+          <div id="ei_obraSelecionada" style="margin-top:10px;display:none">
+            <div class="obra-sel-card">
+              <div class="sc-dot" style="background:var(--blue-700);flex-shrink:0"></div>
+              <div style="min-width:0">
+                <div class="sc-label">Obra selecionada</div>
+                <div style="color:var(--ink);font-size:13px;font-weight:600" id="ei_obraNome">—</div>
+                <div style="font-family:'DM Mono',monospace;font-size:10.5px;color:var(--muted);margin-top:2px" id="ei_obraChave">—</div>
+              </div>
+              <button onclick="limparObraEI()" style="margin-left:auto;appearance:none;border:none;background:transparent;cursor:pointer;font-size:15px;color:var(--muted);flex-shrink:0">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aviso: tipo em construção -->
+        <div class="fsec" id="eiAvisoConstrucao" style="display:none;text-align:center">
+          <div style="font-size:38px;margin-bottom:8px">🚧</div>
+          <h4 style="margin-bottom:6px" id="eiAvisoTitulo">Formulário em construção</h4>
+          <p style="font-size:12.5px;color:var(--muted);line-height:1.6">O formulário específico deste tipo de atividade ainda será desenvolvido. Por enquanto, apenas a Emissão Inicial possui formulário completo.</p>
+        </div>
+
+        <!-- Dados básicos (Etapa 1) -->
+        <div id="eiDadosBasicos">
+
+          <!-- Descrição -->
+          <div class="fsec">
+            <div class="fsec-head"><span class="fsec-ico">📝</span><span class="fsec-title">Descrição da demanda</span><span class="fsec-req">*</span></div>
+            <div class="ffield">
+              <textarea id="ei_descricao" rows="3" placeholder="Descreva o escopo desta demanda…"></textarea>
+            </div>
+          </div>
+
+          <!-- Analistas (chips) -->
+          <div class="fsec">
+            <div class="fsec-head"><span class="fsec-ico">👤</span><span class="fsec-title">Analista responsável</span><span class="fsec-req">*</span></div>
+            <div id="ei_analistaChips" class="anal-chips-wrap"></div>
+            <input type="hidden" id="ei_analista">
+          </div>
+
+          <!-- Classificação -->
+          <div class="fsec">
+            <div class="fsec-head"><span class="fsec-ico">🗂</span><span class="fsec-title">Classificação</span></div>
+            <div class="fgrid2">
+              <div class="ffield">
+                <label>Tipo de atividade</label>
+                <select id="ei_tipoAtividade" onchange="trocarTipoAtividade()"></select>
+              </div>
+              <div class="ffield">
+                <label>Sprint</label>
+                <select id="ei_sprint" onchange="atualizarPeriodoSprintEI()"></select>
+                <div id="ei_sprintPeriodo" style="font-size:11px;color:var(--muted);margin-top:4px;font-family:'DM Mono',monospace"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Ações Etapa 1 -->
+        <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:4px" id="eiAcoesEtapa1">
+          <button class="btn btn-ghost" onclick="closeDrawer('eiOverlay')">Cancelar</button>
+          <button class="btn btn-primary" id="eiBtnAvancar" onclick="avancarEtapa2()">Avançar →</button>
+        </div>
+      </div>
+
+      <!-- ░░░ ETAPA 2 — Detalhamento ░░░ -->
+      <div id="eiEtapa2" style="display:none">
+
+      <!-- Status + transições inline -->
+      <div class="sblock" id="eiTransitions"></div>
+
+      <!-- Resumo da identificação -->
+      <div class="sblock" id="eiResumoTopo" style="display:flex;align-items:center;gap:11px">
+        <button class="btn btn-ghost btn-sm" onclick="voltarEtapa1()" style="flex-shrink:0">← Voltar</button>
+        <div style="min-width:0">
+          <div class="sc-label">Demanda</div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)" id="ei_resumoDesc">—</div>
+        </div>
+      </div>
+
+      <!-- Prioridade -->
+      <div class="sblock">
+        <h4>Prioridade</h4>
+        <div class="field" style="max-width:240px">
+          <select id="ei_prioridade"><option>Alta</option><option selected>Média</option><option>Baixa</option></select>
+        </div>
+      </div>
+
+      <!-- Datas -->
+      <div class="sblock">
+        <h4>Datas</h4>
+        <div class="g2">
+          <div class="field"><label>Data de início</label><input id="ei_dataInicio" type="date"></div>
+          <div class="field"><label>Data prevista de entrega</label><input id="ei_dataPrevista" type="date"></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field">
+            <label>🎯 Meta de envio p/ validação Obras</label>
+            <input id="ei_dataMetaObras" type="date">
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Recomenda-se ~48h antes da data prevista de entrega.</div>
+          </div>
+          <div></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field auto-field-wrap">
+            <label><span class="auto-icon">⚡</span> Envio → Validação Obras</label>
+            <input id="ei_dataEnvioObras" type="date"
+              onchange="onAutoDate('ei_dataEnvioObras','Aguardando Validação Obras')">
+            <div class="auto-hint info" id="ei_hintObras"></div>
+          </div>
+          <div class="field">
+            <label>Data de validação Obras</label>
+            <input id="ei_dataValidacaoObras" type="date">
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Data em que a equipe de Obras concluiu a validação.</div>
+          </div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field auto-field-wrap">
+            <label><span class="auto-icon">⚡</span> Data de entrega real</label>
+            <input id="ei_dataEntregaReal" type="date"
+              onchange="onAutoDate('ei_dataEntregaReal','Concluído')">
+            <div class="auto-hint info" id="ei_hintEntrega"></div>
+          </div>
+          <div></div>
+        </div>
+      </div>
+
+
+      <!-- Observação -->
+      <div class="sblock">
+        <h4>Observação</h4>
+        <div class="field">
+          <textarea id="ei_observacao" rows="3" placeholder="Registre observações relevantes sobre esta demanda…"></textarea>
+        </div>
+      </div>
+
+      <!-- Checklist de projetos (acordeão) -->
+      <div class="sblock">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h4 style="margin:0">Projetos envolvidos</h4>
+          <button class="btn btn-ghost btn-sm" onclick="recolherTodosProjetos()">Recolher todas</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Marque a caixinha de cada projeto envolvido para preencher suas informações.</p>
+        <div id="eiProjetosLista"></div>
+        <div class="add-row" style="margin-top:12px">
+          <input id="ei_newProjeto" placeholder="Novo código (ex.: FUN, PAI…)"
+            style="text-transform:uppercase;font-family:'DM Mono',monospace">
+          <button class="btn btn-ghost btn-sm" onclick="addProjetoCustom()">Adicionar</button>
+        </div>
+      </div>
+
+
+      <!-- EV da obra -->
+      <div class="sblock">
+        <h4>Estudo de Viabilidade (EV)</h4>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Esta demanda alimenta diretamente o EV da obra vinculada. Para a emissão inicial, o EV nasce zerado — abra para preencher os custos.</p>
+        <button class="btn btn-primary" onclick="abrirEVdaDemanda()" style="width:100%;justify-content:center">
+          📄 Abrir EV da obra vinculada
+        </button>
+      </div>
+
+      <!-- Ações Etapa 2 -->
+      <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:4px">
+        <button class="btn btn-ghost" onclick="closeDrawer('eiOverlay')">Fechar</button>
+        <button class="btn btn-primary" onclick="salvarEI()">Salvar</button>
+      </div>
+
+      </div><!-- /eiEtapa2 -->
+
+    </div>
+  </div>
+</div>
+
+
+<!-- DRAWER: EV -->
+<div class="overlay" id="evOverlay" style="z-index:110">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title" id="evTitle">Estudo de Viabilidade</div>
+        <div class="drawer-sub" id="evSubtitle">Obra selecionada</div>
+      </div>
+      <button class="close-btn" onclick="closeDrawer('evOverlay')">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="ev-summary">
+        <div class="ev-card"><div class="ev-label">Valor da Obra</div><div class="ev-value" id="sumValorObra">R$ 0</div></div>
+        <div class="ev-card"><div class="ev-label">Outros Custos</div><div class="ev-value" id="sumOutros">R$ 0</div></div>
+        <div class="ev-card"><div class="ev-label">Total do EV</div><div class="ev-value" id="sumEV">R$ 0</div></div>
+        <div class="ev-card"><div class="ev-label">Custo por m²</div><div class="ev-value" id="sumM2">R$ 0</div></div>
+      </div>
+      <div class="sblock">
+        <h4>Dados gerais</h4>
+        <div class="g2">
+          <div class="field"><label>Área equivalente (m²)</label><input id="areaEquivalente" type="number" min="0" step="0.01" value="0" /></div>
+          <div class="field"><label>Área construída (m²)</label><input id="areaConstruida" type="number" min="0" step="0.01" value="0" /></div>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="sblock"><h4>Custos da Obra</h4><div id="obraCosts"></div></div>
+        <div class="sblock"><h4>Outras Categorias</h4><div id="otherCosts"></div></div>
+      </div>
+      <div style="display:flex;gap:8px;padding-top:2px">
+        <button class="btn btn-ghost" onclick="salvarEVrascunho()">Salvar rascunho</button>
+        <button class="btn btn-primary" onclick="salvarEV()">Salvar EV</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER: NOVA OBRA -->
+<div class="overlay" id="novaObraOverlay">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div>
+        <div class="drawer-title">Nova Obra</div>
+        <div class="drawer-sub">ID e EV gerados automaticamente. Preencha os atributos para gerar a chave.</div>
+      </div>
+      <button class="close-btn" onclick="closeDrawer('novaObraOverlay')">✕</button>
+    </div>
+    <div class="drawer-body">
+
+      <div class="key-preview-box">
+        <div class="kpb-label">Chave gerada automaticamente</div>
+        <div class="kpb-key" id="keyPreview">—</div>
+        <div class="kpb-hint">Atualiza conforme você preenche os campos abaixo</div>
+      </div>
+
+      <div class="sblock">
+        <h4>Dados da Obra</h4>
+        <div class="g3">
+          <div class="field"><label>ID interno</label><input id="newObraId" disabled></div>
+          <div class="field"><label>Código original</label><input id="newCodigoOriginal" placeholder="Opcional"></div>
+          <div class="field"><label>Prazo (dias)</label><input id="newTempoObra" type="number" min="0"></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field"><label>Intervenção / Nome da obra</label><input id="newNomeObra" placeholder="Ex.: Nova Clínica Fortaleza"></div>
+          <div class="field"><label>Tipo de unidade</label><select id="newTipoUnidade"></select></div>
+        </div>
+        <div class="g3" style="margin-top:9px">
+          <div class="field"><label>Cidade</label><input id="newCidade" placeholder="Ex.: Fortaleza"></div>
+          <div class="field"><label>UF</label><select id="newUF"></select></div>
+          <div class="field"><label>Região</label><select id="newRegiao"></select></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field"><label>Classificação</label><select id="newClassificacao"></select></div>
+          <div class="field"><label>Tipologia</label><select id="newTipologia"></select></div>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <h4>Dados complementares</h4>
+        <div class="g3">
+          <div class="field"><label>Área equivalente (m²)</label>
+            <input id="newAreaEq" type="number" min="0" step="0.01" placeholder="0,00"></div>
+          <div class="field"><label>Área construída (m²)</label>
+            <input id="newAreaConst" type="number" min="0" step="0.01" placeholder="0,00"></div>
+          <div class="field"><label>Ordem interna SAP</label>
+            <input id="newOrdemSAP" placeholder="Ex.: 100123456"></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field"><label>CNPJ</label>
+            <input id="newCNPJ" placeholder="00.000.000/0000-00"></div>
+          <div class="field"><label>Endereço</label>
+            <input id="newEndereco" placeholder="Rua, número, bairro"></div>
+        </div>
+      </div>
+
+
+      <div class="sblock">
+        <h4>Demanda inicial vinculada</h4>
+        <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px">Campos da demanda operacional criada junto com a obra.</p>
+        <div class="g4">
+          <div class="field"><label>Analista</label><select id="newAnalista"></select></div>
+          <div class="field"><label>Tipo de atividade</label><select id="newTipoAtividade"></select></div>
+          <div class="field"><label>Sprint</label><select id="newSprint"></select></div>
+          <div class="field"><label>Status inicial</label><select id="newStatus"></select></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" onclick="closeDrawer('novaObraOverlay')">Cancelar</button>
+        <button class="btn btn-primary" onclick="createObra()">Criar obra</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ╔══════════════════════════════════════════════════════╗
+   ║  CONFIGURAÇÃO SUPABASE — substitua com suas chaves   ║
+   ╚══════════════════════════════════════════════════════╝ */
+const SUPABASE_URL = 'https://vljljbbnrpulrvtnpsbr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2tjUUY0kJYR9gzVZFuE-sg_wZOh17q-';
+
+const _sb = (typeof supabase !== 'undefined' && !SUPABASE_URL.includes('SEU_PROJETO'))
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  : null;
+
+function showLoading(visible, msg){
+  const el = document.getElementById('loadingOverlay');
+  if(!el) return;
+  if(visible){ el.style.display='flex'; el.style.opacity='1';
+    if(msg) document.getElementById('loadingMsg').textContent=msg;
+  } else { el.style.opacity='0'; setTimeout(()=>{el.style.display='none';},320); }
+}
+
+function dbSave(table, data){
+  if(!_sb) return;
+  _sb.from(table).upsert(data).then(({error})=>{
+    if(error) console.error('DB save ['+table+']:', error.message);
+  });
+}
+function dbDelete(table, col, val){
+  if(!_sb) return;
+  _sb.from(table).delete().eq(col,val).then(({error})=>{
+    if(error) console.error('DB delete ['+table+']:', error.message);
+  });
+}
+
+function obraToDb(o){
+  return {id:o.id, ev_id:o.evId||'', codigo_original:o.codigoOriginal||'',
+    nome:o.nome, tipo:o.tipo||'', cidade:o.cidade||'', uf:o.uf||'',
+    regiao:o.regiao||'', tempo_obra:o.tempoObra||'', classificacao:o.classificacao||'',
+    tipologia:o.tipologia||'', area_equivalente:Number(o.areaEquivalente)||0,
+    area_construida:Number(o.areaConstruida)||0, ordem_sap:o.ordemSAP||'',
+    cnpj:o.cnpj||'', endereco:o.endereco||''};
+}
+function obraFromDb(r){
+  return {id:r.id, evId:r.ev_id, codigoOriginal:r.codigo_original, nome:r.nome,
+    tipo:r.tipo, cidade:r.cidade, uf:r.uf, regiao:r.regiao, tempoObra:r.tempo_obra,
+    classificacao:r.classificacao, tipologia:r.tipologia,
+    areaEquivalente:r.area_equivalente, areaConstruida:r.area_construida,
+    ordemSAP:r.ordem_sap, cnpj:r.cnpj, endereco:r.endereco};
+}
+function demandaToDb(d){
+  return {codigo:d.codigo, obra:d.obra, analista:d.analista||'',
+    prioridade:d.prioridade||'Média', valor:d.valor||'—', prazo:d.prazo||'—',
+    status:d.status, tipo:d.tipo, sprint:d.sprint||'',
+    pendencia:!!d.pendencia, pendencia_desc:d.pendenciaDesc||''};
+}
+function demandaFromDb(r){
+  return {codigo:r.codigo, obra:r.obra, analista:r.analista, prioridade:r.prioridade,
+    valor:r.valor, prazo:r.prazo, status:r.status, tipo:r.tipo, sprint:r.sprint,
+    pendencia:r.pendencia, pendenciaDesc:r.pendencia_desc};
+}
+function sprintToDb(s){return {nome:s.nome, inicio:s.inicio||null, fim:s.fim||null, status:s.status};}
+function sprintFromDb(r){return {nome:r.nome, inicio:r.inicio, fim:r.fim, status:r.status};}
+function evToDb(obraId, ev){
+  return {obra_id:obraId, obra_vals:ev.obra||[], outros_vals:ev.outros||[],
+    area_eq:ev.areaEq||0, area_const:ev.areaConst||0,
+    valor_total:ev.valorTotal||0, custo_m2:ev.custoM2||0};
+}
+function eiToDb(codigo, ei){
+  return {demanda_codigo:codigo, descricao:ei.descricao||'', analista:ei.analista||'',
+    prioridade:ei.prioridade||'Média', sprint:ei.sprint||'',
+    data_inicio:ei.dataInicio||null, data_prevista:ei.dataPrevista||null,
+    data_meta_obras:ei.dataMetaObras||null, data_envio_obras:ei.dataEnvioObras||null,
+    data_validacao_obras:ei.dataValidacaoObras||null, data_entrega_real:ei.dataEntregaReal||null,
+    observacao:ei.observacao||'', projetos:ei.projetos||{},
+    projetos_custom:ei.projetosCustom||[]};
+}
+
+async function seedObras(){
+  showLoading(true,'Populando base de obras (125 registros)…');
+  const batch=20;
+  for(let i=0;i<obrasBase.length;i+=batch){
+    const rows=obrasBase.slice(i,i+batch).map(obraToDb);
+    const {error}=await _sb.from('obras').insert(rows);
+    if(error) console.error('Seed erro:', error.message);
+    document.getElementById('loadingMsg').textContent=
+      `Importando obras… ${Math.min(i+batch,obrasBase.length)} / ${obrasBase.length}`;
+  }
+  obras=[...obrasBase];
+}
+
+const sprintsDefault=[
+  {nome:'Sprint 10',inicio:'2026-05-25',fim:'2026-06-14',status:'Encerrada'},
+  {nome:'Sprint 11',inicio:'2026-06-15',fim:'2026-06-28',status:'Ativa'},
+  {nome:'Sprint 12',inicio:'2026-06-29',fim:'2026-07-12',status:'Planejada'}
+];
+
+async function initDB(){
+  if(!_sb){ renderAll(); return; }
+  showLoading(true,'Conectando ao banco de dados…');
+  try{
+    const {data:obrasData, error:e1}=await _sb.from('obras').select('*');
+    if(e1) throw e1;
+    if(obrasData && obrasData.length>0){ obras=obrasData.map(obraFromDb); }
+    else{
+      const seed=confirm('Banco de dados vazio.\nDeseja importar as 125 obras da base Hapvida?');
+      if(seed) await seedObras(); else obras=[...obrasBase];
+    }
+    const {data:demandasData}=await _sb.from('demandas').select('*');
+    if(demandasData) demandas=demandasData.map(demandaFromDb);
+    const {data:sprintsData}=await _sb.from('sprints').select('*').order('nome');
+    if(sprintsData && sprintsData.length>0){ sprints=sprintsData.map(sprintFromDb); }
+    else{ await _sb.from('sprints').insert(sprintsDefault.map(sprintToDb)); sprints=[...sprintsDefault]; }
+    const {data:evData}=await _sb.from('ev_store').select('*');
+    if(evData) evData.forEach(r=>{ evStore[r.obra_id]={obra:r.obra_vals||[],outros:r.outros_vals||[],
+      areaEq:r.area_eq,areaConst:r.area_const,valorTotal:r.valor_total,custoM2:r.custo_m2}; });
+    const {data:fdData}=await _sb.from('form_data_ei').select('*');
+    if(fdData) fdData.forEach(r=>{ formData[r.demanda_codigo]={ei:{
+      descricao:r.descricao||'', analista:r.analista||'', prioridade:r.prioridade||'Média',
+      sprint:r.sprint||'', dataInicio:r.data_inicio||'', dataPrevista:r.data_prevista||'',
+      dataMetaObras:r.data_meta_obras||'', dataEnvioObras:r.data_envio_obras||'',
+      dataValidacaoObras:r.data_validacao_obras||'', dataEntregaReal:r.data_entrega_real||'',
+      observacao:r.observacao||'', projetos:r.projetos||{}, projetosCustom:r.projetos_custom||[]
+    }}; });
+    const {data:cfgData}=await _sb.from('configuracoes').select('*');
+    if(cfgData && cfgData.length>0){
+      const map={analistas,tiposUnidade,classificacoes,tipologias,tiposAtividade,statusList};
+      cfgData.forEach(r=>{ if(map[r.chave]&&r.valor?.length){ map[r.chave].length=0; map[r.chave].push(...r.valor); } });
+    } else {
+      const cfgs=[['analistas',analistas],['tiposUnidade',tiposUnidade],['classificacoes',classificacoes],
+        ['tipologias',tipologias],['tiposAtividade',tiposAtividade],['statusList',statusList]];
+      await _sb.from('configuracoes').insert(cfgs.map(([k,v])=>({chave:k,valor:v})));
+    }
+  }catch(err){
+    console.error('initDB erro:', err);
+    alert('Erro ao conectar com o Supabase. Verifique as credenciais. Rodando em modo offline.');
+    obras=[...obrasBase];
+  }
+  showLoading(false);
+  renderAll();
+}
+
+function renderAll(){
+  fillAllSelects(); renderSprintSelects();
+  buildCostFields('obraCosts',obraCostFields); buildCostFields('otherCosts',otherCostFields);
+  document.querySelectorAll('#obraCosts input,#otherCosts input,#areaEquivalente')
+    .forEach(el=>el.addEventListener('input',calculateEV));
+  renderObras(); renderKanban(); renderSprints(); renderConfigLists(); renderLegenda();
+  if(typeof renderSprintTabs==='function') renderSprintTabs();
+}
+
+/* ══════════════════════════════════
+   CÓDIGO DA CHAVE
+══════════════════════════════════ */
+const TIPOLOGIA_CODES = { "nova unidade":"NVU","retrofit":"RFT","ampliacao":"AMP","ampliação":"AMP" };
+const TIPO_UNIDADE_CODES = { "clinica":"01","clínica":"01","hospital":"02","diagnostico":"03","diagnóstico":"03","pronto atendimento":"04","administrativo":"05","centro de distribuicao":"06","centro de distribuição":"06","tea":"07","coleta":"08","medprev":"09" };
+const CLASSIFICACAO_CODES = { "adequacao regulatoria":"AR","adequação regulatória":"AR","eficiencia operacional":"EO","eficiência operacional":"EO","fachada":"FC","obra emergencial":"EM","obra estrategica":"EE","obra estratégica":"EE","suficiencia de rede":"SR","suficiência de rede":"SR","verticalizacao":"VZ","verticalização":"VZ","venda de servicos":"VS","venda de serviços":"VS","venda de servico":"VS","venda de serviço":"VS","padronizacao de unidade":"PU","padronização de unidade":"PU" };
+const TIPOLOGIA_LABELS  = { NVU:"Nova Unidade", RFT:"Retrofit", AMP:"Ampliação" };
+const TIPO_UNIDADE_LABELS = { "01":"Clínica","02":"Hospital","03":"Diagnóstico","04":"Pronto Atendimento","05":"Administrativo","06":"Centro de Distribuição","07":"TEA","08":"Coleta","09":"Medprev" };
+const CLASSIFICACAO_LABELS = { AR:"Adequação Regulatória", EO:"Eficiência Operacional", FC:"Fachada", EM:"Obra Emergencial", EE:"Obra Estratégica", SR:"Suficiência de Rede", VZ:"Verticalização", VS:"Venda de Serviços", PU:"Padronização de Unidade" };
+
+function norm(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+function getCode(map, value){
+  if(!value) return "??";
+  const n = norm(value);
+  if(map[n]) return map[n];
+  for(const [k,v] of Object.entries(map)) if(norm(k)===n) return v;
+  return "??";
+}
+
+function gerarChave(obra){
+  const seqNum = parseInt((obra.id||"OBR-000").replace("OBR-",""))||0;
+  const seq = String(seqNum).padStart(3,"0");
+  const ano = String(new Date().getFullYear()).slice(-2);
+  const uni = getCode(TIPO_UNIDADE_CODES, obra.tipo);
+  const cls = getCode(CLASSIFICACAO_CODES, obra.classificacao);
+  const tip = getCode(TIPOLOGIA_CODES, obra.tipologia);
+  const uf  = (obra.uf||"??").toUpperCase();
+  return `${seq}${ano}_${uni}_${cls}_${tip}_${uf}`;
+}
+
+function updateKeyPreview(){
+  const seqNum = obras.length + 1;
+  const seq = String(seqNum).padStart(3,"0");
+  const ano = String(new Date().getFullYear()).slice(-2);
+  const uni = getCode(TIPO_UNIDADE_CODES, document.getElementById("newTipoUnidade").value);
+  const cls = getCode(CLASSIFICACAO_CODES, document.getElementById("newClassificacao").value);
+  const tip = getCode(TIPOLOGIA_CODES, document.getElementById("newTipologia").value);
+  const uf  = (document.getElementById("newUF").value||"??").toUpperCase();
+  const chave = `${seq}${ano}_${uni}_${cls}_${tip}_${uf}`;
+  document.getElementById("keyPreview").textContent = chave;
+}
+
+function renderLegenda(){
+  /* Visual format — Seq+Ano _ UNI _ CLS _ TIP _ UF */
+  document.getElementById("keyFormatVisual").innerHTML = `
+    <span class="kf-seg kf-seq">001</span><span class="kf-seg kf-yr">26</span>
+    <span class="kf-sep">_</span><span class="kf-seg kf-uni">01</span>
+    <span class="kf-sep">_</span><span class="kf-seg kf-cls">AR</span>
+    <span class="kf-sep">_</span><span class="kf-seg kf-tip">RFT</span>
+    <span class="kf-sep">_</span><span class="kf-seg kf-uf">CE</span>`;
+
+  document.getElementById("keyLegendDesc").innerHTML = [
+    ["#E8F0FF","#003A99","Seq (3 dígitos)"],
+    ["#E0ECFF","#001F8A","Ano (2 dígitos)"],
+    ["#E8FFF5","#005030","Tipo de Unidade"],
+    ["#FFF8E5","#7A4200","Classificação"],
+    ["#FFF0E5","#963000","Tipologia"],
+    ["#E5F2FF","#003D7A","UF"]
+  ].map(([bg,col,label])=>`<div class="kld-item"><div class="kld-dot" style="background:${bg};border:1px solid ${col}40"></div><span>${label}</span></div>`).join("");
+
+  /* Code tables */
+  function buildTable(map){ return "<table class=\"legend-table\"><tbody>"+Object.entries(map).map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join("")+"</tbody></table>"; }
+  document.getElementById("legendGrid").innerHTML = `
+    <div class="legend-card"><h5>Tipo de Unidade</h5>${buildTable(TIPO_UNIDADE_LABELS)}</div>
+    <div class="legend-card"><h5>Classificação</h5>${buildTable(CLASSIFICACAO_LABELS)}</div>
+    <div class="legend-card"><h5>Tipologia</h5>${buildTable(TIPOLOGIA_LABELS)}<br>
+      <h5 style="margin-top:12px">Seq + Ano + UF</h5>
+      <table class="legend-table"><tbody>
+        <tr><td>001–999</td><td>Nº sequencial da obra</td></tr>
+        <tr><td>26, 27…</td><td>Ano de cadastro (2 dígitos)</td></tr>
+        <tr><td>CE, SP…</td><td>UF conforme padrão IBGE</td></tr>
+      </tbody></table>
+    </div>`;
+}
+
+/* ══════════════════════════════════
+   DATA
+══════════════════════════════════ */
+const obrasBase=[{"id":"OBR-0001","evId":"EV-0001","codigoOriginal":"9091","nome":"Nova Clínica Caucaia","tipo":"Clínica","cidade":"Caucaia","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0002","evId":"EV-0002","codigoOriginal":"9092","nome":"Nova Clínica Eusébio","tipo":"Clínica","cidade":"Eusébio","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0003","evId":"EV-0003","codigoOriginal":"9084","nome":"Novo TEA Caucaia","tipo":"TEA","cidade":"Caucaia","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0004","evId":"EV-0004","codigoOriginal":"0000","nome":"Agência Transfusional HS Promed","tipo":"Hospital","cidade":"Goiânia","uf":"GO","regiao":"Centro Oeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0005","evId":"EV-0005","codigoOriginal":"0000","nome":"Nova Clínica Brasília Asa Norte","tipo":"Clínica","cidade":"Brasília","uf":"DF","regiao":"Centro Oeste","tempoObra":"90","classificacao":"Obra estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0006","evId":"EV-0006","codigoOriginal":"0000","nome":"Nova Hemodinâmica Brasília","tipo":"Hospital","cidade":"Brasília","uf":"DF","regiao":"Centro Oeste","tempoObra":"90","classificacao":"Verticalização","tipologia":"Retrofit"},{"id":"OBR-0007","evId":"EV-0007","codigoOriginal":"9067","nome":"Coleta Anápolis","tipo":"Coleta","cidade":"Anápolis","uf":"GO","regiao":"Centro Oeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0008","evId":"EV-0008","codigoOriginal":"4357","nome":"Adequação de ETE Hospital Jardim América","tipo":"Hospital","cidade":"Goiânia","uf":"GO","regiao":"Centro Oeste","tempoObra":"120","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0009","evId":"EV-0009","codigoOriginal":"4391","nome":"Adequação PPCI HS Quirinópolis","tipo":"Hospital","cidade":"Quirinópolis","uf":"GO","regiao":"Centro Oeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0010","evId":"EV-0010","codigoOriginal":"0000","nome":"Novo TEA Natal Zona Norte","tipo":"TEA","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova Unidade"},{"id":"OBR-0011","evId":"EV-0011","codigoOriginal":"4178","nome":"Novo TEA João Pessoa Rui Barbosa (2025)","tipo":"TEA","cidade":"João Pessoa","uf":"PB","regiao":"Nordeste","tempoObra":"113","classificacao":"Suficiência de Rede","tipologia":"Nova Unidade"},{"id":"OBR-0012","evId":"EV-0012","codigoOriginal":"4325","nome":"Novo TEA Campina Grande (2025)","tipo":"TEA","cidade":"Campina Grande","uf":"PB","regiao":"Nordeste","tempoObra":"90","classificacao":"Verticalização","tipologia":"Nova Unidade"},{"id":"OBR-0013","evId":"EV-0013","codigoOriginal":"0000","nome":"Agência Transfusional HS Rio Poty","tipo":"Hospital","cidade":"Teresina","uf":"PI","regiao":"Nordeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0014","evId":"EV-0014","codigoOriginal":"0000","nome":"HS Guarás Virose","tipo":"Hospital","cidade":"São Luís","uf":"MA","regiao":"Nordeste","tempoObra":"37","classificacao":"Obra emergencial","tipologia":"Retrofit"},{"id":"OBR-0015","evId":"EV-0015","codigoOriginal":"0000","nome":"Reestruturação Térreo HS Santa Maria (Virose)","tipo":"Hospital","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"42","classificacao":"Obra emergencial","tipologia":"Retrofit"},{"id":"OBR-0016","evId":"EV-0016","codigoOriginal":"0000","nome":"Agência Transfusional HS Geral da Paraíba","tipo":"Hospital","cidade":"João Pessoa","uf":"PB","regiao":"Nordeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0017","evId":"EV-0017","codigoOriginal":"0000","nome":"Transferência Capela Casa Forte p/ Capibaribe","tipo":"Hospital","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"81","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0018","evId":"EV-0018","codigoOriginal":"4363","nome":"Adequação VISA Hapclínica Pedro da Hora","tipo":"Clínica","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"135","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0019","evId":"EV-0019","codigoOriginal":"0000","nome":"Novo mamógrafo Clínica Lia Varela","tipo":"Clínica","cidade":"São Luís","uf":"MA","regiao":"Nordeste","tempoObra":"60","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0020","evId":"EV-0020","codigoOriginal":"0000","nome":"HapNatal Rampa Cirúrgica Virose","tipo":"Hospital","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"24","classificacao":"Obra emergencial","tipologia":"Retrofit"},{"id":"OBR-0021","evId":"EV-0021","codigoOriginal":"4387","nome":"Adequação Acessibilidade TEA Natal","tipo":"TEA","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0022","evId":"EV-0022","codigoOriginal":"0000","nome":"Adequação PA Pecém (Fracionamento)","tipo":"Pronto Atendimento","cidade":"Pecém","uf":"CE","regiao":"Nordeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0023","evId":"EV-0023","codigoOriginal":"0000","nome":"Adequação PA Parangaba (Fracionamento)","tipo":"Pronto Atendimento","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0024","evId":"EV-0024","codigoOriginal":"0000","nome":"Adequação PA Mario Barreto (Fracionamento)","tipo":"Pronto Atendimento","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0025","evId":"EV-0025","codigoOriginal":"4376","nome":"Adequação SPDA Hospital Francisca de Sande","tipo":"Hospital","cidade":"Feira de Santana","uf":"BA","regiao":"Nordeste","tempoObra":"107","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0026","evId":"EV-0026","codigoOriginal":"4375","nome":"Adequação SPDA Hospital Lauro de Freitas","tipo":"Hospital","cidade":"Lauro de Freitas","uf":"BA","regiao":"Nordeste","tempoObra":"85","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0027","evId":"EV-0027","codigoOriginal":"4362","nome":"Adequação VISA HS Cabo","tipo":"Hospital","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0028","evId":"EV-0028","codigoOriginal":"4381","nome":"Adequação PPCI HS Maceió","tipo":"Hospital","cidade":"Maceió","uf":"AL","regiao":"Nordeste","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0029","evId":"EV-0029","codigoOriginal":"0000","nome":"Nova Torre da Ampliação HAPFOR","tipo":"Hospital","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"280","classificacao":"Obra estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0030","evId":"EV-0030","codigoOriginal":"4386","nome":"Adequação VISA HS Semed (Sala vermelha)","tipo":"Hospital","cidade":"Camaçari","uf":"BA","regiao":"Nordeste","tempoObra":"120","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0031","evId":"EV-0031","codigoOriginal":"4203","nome":"Adequação VISA HS Lauro de Freitas","tipo":"Hospital","cidade":"Lauro de Freitas","uf":"BA","regiao":"Nordeste","tempoObra":"60","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0032","evId":"EV-0032","codigoOriginal":"4374","nome":"Adequação PPCI Hospital Semed","tipo":"Hospital","cidade":"Camaçari","uf":"BA","regiao":"Nordeste","tempoObra":"120","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0033","evId":"EV-0033","codigoOriginal":"0000","nome":"Reforma ADM 2º andar 406","tipo":"Administrativo","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"86","classificacao":"Padronização de Unidade","tipologia":"Retrofit"},{"id":"OBR-0034","evId":"EV-0034","codigoOriginal":"8860","nome":"Nova Medprev Olinda","tipo":"Medprev","cidade":"Olinda","uf":"PE","regiao":"Nordeste","tempoObra":"130","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0035","evId":"EV-0035","codigoOriginal":"4352","nome":"Substituição Raio-X HC São Gerardo","tipo":"Diagnóstico","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"-4","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0036","evId":"EV-0036","codigoOriginal":"9064","nome":"Ampliação Medprev Fortaleza","tipo":"Medprev","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Ampliação"},{"id":"OBR-0037","evId":"EV-0037","codigoOriginal":"9068","nome":"Ampliação TEA Maciel Pinheiro","tipo":"TEA","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Ampliação"},{"id":"OBR-0038","evId":"EV-0038","codigoOriginal":"3590","nome":"Adequação HapNatal (4ª fase)","tipo":"Hospital","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"140","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0039","evId":"EV-0039","codigoOriginal":"0000","nome":"Novo Hospital Aracaju","tipo":"Hospital","cidade":"Aracaju","uf":"SE","regiao":"Nordeste","tempoObra":"365","classificacao":"Obra estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0040","evId":"EV-0040","codigoOriginal":"4395","nome":"Adequação VISA PA Caxangá","tipo":"Pronto Atendimento","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"120","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0041","evId":"EV-0041","codigoOriginal":"9330","nome":"Ampliação TEA Recife Madalena (2026)","tipo":"TEA","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de Rede","tipologia":"Ampliação"},{"id":"OBR-0042","evId":"EV-0042","codigoOriginal":"4402","nome":"Adequação VISA Clínica Beira Rio","tipo":"Clínica","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"140","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0043","evId":"EV-0043","codigoOriginal":"4398","nome":"Adequação PPCI HC João Pessoa","tipo":"Clínica","cidade":"João Pessoa","uf":"PB","regiao":"Nordeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0044","evId":"EV-0044","codigoOriginal":"4392","nome":"Adequação PPCI Clínica Aracaju","tipo":"Clínica","cidade":"Aracajú","uf":"SE","regiao":"Nordeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0045","evId":"EV-0045","codigoOriginal":"9063","nome":"Nova Coleta Maracanaú","tipo":"Coleta","cidade":"Maracanaú","uf":"CE","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0046","evId":"EV-0046","codigoOriginal":"9066","nome":"Nova Coleta São Gerardo","tipo":"Coleta","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0047","evId":"EV-0047","codigoOriginal":"9069","nome":"Nova Coleta Teresina","tipo":"Coleta","cidade":"Teresina","uf":"PI","regiao":"Nordeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0048","evId":"EV-0048","codigoOriginal":"0000","nome":"Substituição Tomógrafo HS Ana Lima","tipo":"Hospital","cidade":"Maracanaú","uf":"CE","regiao":"Nordeste","tempoObra":"91","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0049","evId":"EV-0049","codigoOriginal":"9076","nome":"Nova Medprev Natal 1","tipo":"Medprev","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0050","evId":"EV-0050","codigoOriginal":"9085","nome":"Novo TEA Alto de São Manoel","tipo":"TEA","cidade":"Mossoró","uf":"RN","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0051","evId":"EV-0051","codigoOriginal":"9088","nome":"Nova Medprev Natal 2","tipo":"Medprev","cidade":"Natal","uf":"RN","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0052","evId":"EV-0052","codigoOriginal":"9094","nome":"Novo CD Fortaleza","tipo":"Centro de Distribuição","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Eficiência Operacional","tipologia":"Nova unidade"},{"id":"OBR-0053","evId":"EV-0053","codigoOriginal":"4401","nome":"Adequação VISA PA Mario Barreto","tipo":"Pronto Atendimento","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0054","evId":"EV-0054","codigoOriginal":"9065","nome":"Nova Unidade Mega Fortaleza","tipo":"Diagnóstico","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"120","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0055","evId":"EV-0055","codigoOriginal":"9077","nome":"Novo TEA Fortaleza","tipo":"TEA","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0056","evId":"EV-0056","codigoOriginal":"9090","nome":"Nova Medprev Fortaleza","tipo":"Medprev","cidade":"Fortaleza","uf":"CE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0057","evId":"EV-0057","codigoOriginal":"9078","nome":"Novo TEA Aracaju","tipo":"TEA","cidade":"Aracaju","uf":"SE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0058","evId":"EV-0058","codigoOriginal":"9089","nome":"Nova Medprev Recife","tipo":"Medprev","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"120","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0059","evId":"EV-0059","codigoOriginal":"9081","nome":"Novo TEA Abreu e Lima","tipo":"TEA","cidade":"Recife","uf":"PE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0060","evId":"EV-0060","codigoOriginal":"9082","nome":"Novo TEA Cabo de Santo Agostinho","tipo":"TEA","cidade":"Cabo de Santo Agostinho","uf":"PE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0061","evId":"EV-0061","codigoOriginal":"0000","nome":"Ampliação Hospital Parauapebas","tipo":"Hospital","cidade":"Parauapebas","uf":"PA","regiao":"Norte","tempoObra":"172","classificacao":"Suficiência de Rede","tipologia":"Nova Unidade"},{"id":"OBR-0062","evId":"EV-0062","codigoOriginal":"0000","nome":"Substituição Mamógrafo Hospital Nilton Lins (AM)","tipo":"Hospital","cidade":"Manaus","uf":"AM","regiao":"Norte","tempoObra":"60","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0063","evId":"EV-0063","codigoOriginal":"9062","nome":"Ampliação Diagnóstico São Lucas","tipo":"Diagnóstico","cidade":"Manaus","uf":"AM","regiao":"Norte","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Ampliação"},{"id":"OBR-0064","evId":"EV-0064","codigoOriginal":"9061","nome":"Nova Coleta Bairro 14 bis Manaus","tipo":"Coleta","cidade":"Manaus","uf":"AM","regiao":"Norte","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0065","evId":"EV-0065","codigoOriginal":"9083","nome":"Novo TEA Ananindeua","tipo":"TEA","cidade":"Ananindeua","uf":"PA","regiao":"Norte","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0066","evId":"EV-0066","codigoOriginal":"4380","nome":"Adequação PPCI Hospital Nilton Lins","tipo":"Hospital","cidade":"Manaus","uf":"AM","regiao":"Norte","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0067","evId":"EV-0067","codigoOriginal":"9079","nome":"Novo TEA Jaboatão dos Guararapes","tipo":"TEA","cidade":"Jaboatão dos Guararapes","uf":"NE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0068","evId":"EV-0068","codigoOriginal":"9080","nome":"Novo TEA Camaragibe","tipo":"TEA","cidade":"Camaragibe","uf":"NE","regiao":"Nordeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0069","evId":"EV-0069","codigoOriginal":"0000","nome":"Novo Hospital Antônio Prudente SP (R. Berta)","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"720","classificacao":"Obra Estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0070","evId":"EV-0070","codigoOriginal":"0000","nome":"Modernização 15 Leitos HS São Bernardo (VS)","tipo":"Hospital","cidade":"São Bernardo do Campo","uf":"SP","regiao":"Sudeste","tempoObra":"120","classificacao":"Venda de Serviço","tipologia":"Retrofit"},{"id":"OBR-0071","evId":"EV-0071","codigoOriginal":"0000","nome":"Ampliação de Leitos HS Santana (SP) (Virose)","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"105","classificacao":"Obra Estratégica","tipologia":"Retrofit"},{"id":"OBR-0072","evId":"EV-0072","codigoOriginal":"0000","nome":"Ampliação de Leitos HS Nossa Senhora do Rosário (SP) (Virose)","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Obra Estratégica","tipologia":"Retrofit"},{"id":"OBR-0073","evId":"EV-0073","codigoOriginal":"4365","nome":"Adequação VISA CC Merces","tipo":"Clínica","cidade":"Merces","uf":"MG","regiao":"Sudeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0074","evId":"EV-0074","codigoOriginal":"4268","nome":"Adequação VISA HS Vera Cruz","tipo":"Hospital","cidade":"Belo Horizonte","uf":"MG","regiao":"Sudeste","tempoObra":"250","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0075","evId":"EV-0075","codigoOriginal":"4367","nome":"Adequação VISA PA Santa Rosa","tipo":"Pronto Atendimento","cidade":"Santa Rosa de Viterbo","uf":"SP","regiao":"Sudeste","tempoObra":"145","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0076","evId":"EV-0076","codigoOriginal":"0000","nome":"Agência Transfusional HS Frei Galvão","tipo":"Hospital","cidade":"Santos","uf":"SP","regiao":"Sudeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0077","evId":"EV-0077","codigoOriginal":"0000","nome":"Agência Transfusional HS Nova Vida","tipo":"Hospital","cidade":"Itapevi","uf":"SP","regiao":"Sudeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0078","evId":"EV-0078","codigoOriginal":"0000","nome":"Ampliação de Leitos HS UASA (SP) (Virose)","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"150","classificacao":"Obra Estratégica","tipologia":"Retrofit"},{"id":"OBR-0079","evId":"EV-0079","codigoOriginal":"4372","nome":"Adequação VISA PA Ribeirão Preto","tipo":"Pronto Atendimento","cidade":"Ribeirão Preto","uf":"SP","regiao":"Sudeste","tempoObra":"30","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0080","evId":"EV-0080","codigoOriginal":"0000","nome":"HS Santana - Mogi das Cruzes (VS)","tipo":"Hospital","cidade":"Mogi das Cruzes","uf":"SP","regiao":"Sudeste","tempoObra":"100","classificacao":"Venda de serviço","tipologia":"Retrofit"},{"id":"OBR-0081","evId":"EV-0081","codigoOriginal":"0000","nome":"Agência Transfusional HS IMESA","tipo":"Hospital","cidade":"Alfenas","uf":"MG","regiao":"Sudeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0082","evId":"EV-0082","codigoOriginal":"4382","nome":"Adequação VISA Diagnóstico Itabuna","tipo":"Diagnóstico","cidade":"Osasco","uf":"SP","regiao":"Sudeste","tempoObra":"60","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0083","evId":"EV-0083","codigoOriginal":"0000","nome":"HS Renascença Campinas (VS)","tipo":"Hospital","cidade":"Campinas","uf":"SP","regiao":"Sudeste","tempoObra":"100","classificacao":"Venda de serviço","tipologia":"Retrofit"},{"id":"OBR-0084","evId":"EV-0084","codigoOriginal":"4085","nome":"Nova Coleta Zona Central Bela Cintra (Paraíso)","tipo":"Coleta","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Verticalização","tipologia":"Nova Unidade"},{"id":"OBR-0085","evId":"EV-0085","codigoOriginal":"4334","nome":"Adequação VISA Coleta 9 Julho (Araraquara)","tipo":"Coleta","cidade":"Araraquara","uf":"SP","regiao":"Sudeste","tempoObra":"121","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0086","evId":"EV-0086","codigoOriginal":"4361","nome":"Adequação VISA Netto Campello (Climatização)","tipo":"Hospital","cidade":"Sertãozinho","uf":"SP","regiao":"Sudeste","tempoObra":"180","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0087","evId":"EV-0087","codigoOriginal":"4187","nome":"Novo TEA São Vicente Vila Cascatinha (2025)","tipo":"TEA","cidade":"São Vicente","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Verticalização","tipologia":"Nova Unidade"},{"id":"OBR-0088","evId":"EV-0088","codigoOriginal":"0000","nome":"Pronto Atendimento e Clínica Botafogo (RJ)","tipo":"Pronto Atendimento","cidade":"Rio de Janeiro","uf":"RJ","regiao":"Sudeste","tempoObra":"191","classificacao":"Obra Estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0089","evId":"EV-0089","codigoOriginal":"4198","nome":"Nova Clínica Santos Amador Bueno","tipo":"Clínica","cidade":"Santos","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Eficiência Operacional","tipologia":"Nova Unidade"},{"id":"OBR-0090","evId":"EV-0090","codigoOriginal":"4158","nome":"Adequação VISA HS São Bernardo","tipo":"Hospital","cidade":"São Bernardo do Campo","uf":"SP","regiao":"Sudeste","tempoObra":"180","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0091","evId":"EV-0091","codigoOriginal":"4397","nome":"Adequação Drenagem Pluvial Clínica Pirassununga","tipo":"Clínica","cidade":"Pirassununga","uf":"SP","regiao":"Sudeste","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0092","evId":"EV-0092","codigoOriginal":"4369","nome":"Adequação VISA Maternidade Octaviano Neves","tipo":"Hospital","cidade":"Belo Horizonte","uf":"MG","regiao":"Sudeste","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0093","evId":"EV-0093","codigoOriginal":"0000","nome":"Ampliação Hospital Cruzeiro do Sul","tipo":"Hospital","cidade":"Osasco","uf":"SP","regiao":"Sudeste","tempoObra":"180","classificacao":"Suficiência de Rede","tipologia":"Nova Unidade"},{"id":"OBR-0094","evId":"EV-0094","codigoOriginal":"4265","nome":"Adequação PPCI UA Cidade Nova","tipo":"Pronto Atendimento","cidade":"Rio de Janeiro","uf":"RJ","regiao":"Sudeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0095","evId":"EV-0095","codigoOriginal":"0000","nome":"Novo Hospital Atibaia","tipo":"Hospital","cidade":"Atibaia","uf":"SP","regiao":"Sudeste","tempoObra":"365","classificacao":"Obra estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0096","evId":"EV-0096","codigoOriginal":"4385","nome":"Adequação VISA Hospital Santana","tipo":"Hospital","cidade":"Mogi das Cruzes","uf":"SP","regiao":"Sudeste","tempoObra":"200","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0097","evId":"EV-0097","codigoOriginal":"0000","nome":"Novo Hospital Bauru","tipo":"Hospital","cidade":"Bauru","uf":"SP","regiao":"Sudeste","tempoObra":"365","classificacao":"Obra estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0098","evId":"EV-0098","codigoOriginal":"0000","nome":"Novo Elevador HS São Bernardo","tipo":"Hospital","cidade":"São Bernardo","uf":"SP","regiao":"Sudeste","tempoObra":"120","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0099","evId":"EV-0099","codigoOriginal":"8066","nome":"Reforma Hospital Santa Martha","tipo":"Hospital","cidade":"Niterói","uf":"RJ","regiao":"Sudeste","tempoObra":"180","classificacao":"Obra emergencial","tipologia":"Retrofit"},{"id":"OBR-0100","evId":"EV-0100","codigoOriginal":"4394","nome":"Adequação VISA Clínica Serrana","tipo":"Clínica","cidade":"Serrana","uf":"SP","regiao":"Sudeste","tempoObra":"75","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0101","evId":"EV-0101","codigoOriginal":"9072","nome":"Unidade Mega Guarulhos","tipo":"Diagnóstico","cidade":"Guarulhos","uf":"SP","regiao":"Sudeste","tempoObra":"150","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0102","evId":"EV-0102","codigoOriginal":"9075","nome":"Coleta Guarulhos (Bosque Maia)","tipo":"Coleta","cidade":"Guarulhos","uf":"SP","regiao":"Sudeste","tempoObra":"75","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0103","evId":"EV-0103","codigoOriginal":"9070","nome":"Ampliação Coleta Rudge Ramos","tipo":"Coleta","cidade":"São Bernardo do Campo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Ampliação"},{"id":"OBR-0104","evId":"EV-0104","codigoOriginal":"4378","nome":"Adequação VISA HS Duque de Caxias","tipo":"Hospital","cidade":"Rio de Janeiro","uf":"RJ","regiao":"Sudeste","tempoObra":"120","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0105","evId":"EV-0105","codigoOriginal":"4399","nome":"Adequação VISA HS Araraquara (PS)","tipo":"Hospital","cidade":"Araraquara","uf":"SP","regiao":"Sudeste","tempoObra":"150","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0106","evId":"EV-0106","codigoOriginal":"9087","nome":"Novo TEA Capão Redondo","tipo":"TEA","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0107","evId":"EV-0107","codigoOriginal":"9086","nome":"Novo TEA Cotia","tipo":"TEA","cidade":"Cotia","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0108","evId":"EV-0108","codigoOriginal":"0000","nome":"Fachada Hospital Nossa Sra. do Rosário","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Fachada","tipologia":"Retrofit"},{"id":"OBR-0109","evId":"EV-0109","codigoOriginal":"0000","nome":"Fachada Hospital Bosque da Saúde","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Fachada","tipologia":"Retrofit"},{"id":"OBR-0110","evId":"EV-0110","codigoOriginal":"0000","nome":"Fachada Hospital Salvalus","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"120","classificacao":"Fachada","tipologia":"Retrofit"},{"id":"OBR-0111","evId":"EV-0111","codigoOriginal":"9073","nome":"Nova Unidade Mega Osasco","tipo":"Diagnóstico","cidade":"Osasco","uf":"SP","regiao":"Sudeste","tempoObra":"120","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0112","evId":"EV-0112","codigoOriginal":"0000","nome":"Novo Hospital Ibirapuera SP (Brig. Luis Antonio)","tipo":"Hospital","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"545","classificacao":"Obra Estratégica","tipologia":"Nova Unidade"},{"id":"OBR-0113","evId":"EV-0113","codigoOriginal":"9071","nome":"Nova Unidade Mega Alto Tietê (Suzano)","tipo":"Diagnóstico","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"120","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0114","evId":"EV-0114","codigoOriginal":"9093","nome":"Transferência Patrimônio SP","tipo":"Centro de Distribuição","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"45","classificacao":"Eficiência Operacional","tipologia":"Nova unidade"},{"id":"OBR-0115","evId":"EV-0115","codigoOriginal":"4403","nome":"Adequação VISA Clínica Jardim Primavera","tipo":"Clínica","cidade":"Araraquara","uf":"SP","regiao":"Sudeste","tempoObra":"60","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0116","evId":"EV-0116","codigoOriginal":"9074","nome":"Novo Posto de Coleta Santo André","tipo":"Diagnóstico","cidade":"Santo André","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Suficiência de rede","tipologia":"Nova unidade"},{"id":"OBR-0117","evId":"EV-0117","codigoOriginal":"4406","nome":"Adequação Prefeitura Clínica Napoleão Laureano","tipo":"Clínica","cidade":"São Bernardo do Campo","uf":"SP","regiao":"Sudeste","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0118","evId":"EV-0118","codigoOriginal":"4407","nome":"Adequação Acessibilidade CC Prestes Maia","tipo":"Clínica","cidade":"São Bernardo do Campo","uf":"SP","regiao":"Sudeste","tempoObra":"90","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0119","evId":"EV-0119","codigoOriginal":"0000","nome":"Ampliação CD São Paulo","tipo":"Centro de Distribuição","cidade":"São Paulo","uf":"SP","regiao":"Sudeste","tempoObra":"45","classificacao":"Eficiência Operacional","tipologia":"Retrofit"},{"id":"OBR-0120","evId":"EV-0120","codigoOriginal":"0000","nome":"Agência Transfusional HS e Maternidade Brígida","tipo":"Hospital","cidade":"Curitiba","uf":"PR","regiao":"Sul","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0121","evId":"EV-0121","codigoOriginal":"0000","nome":"Modernização 10 Leitos HS Balneário Camboriú (VS)","tipo":"Hospital","cidade":"Balneário Camboriú","uf":"SC","regiao":"Sul","tempoObra":"100","classificacao":"Venda de Serviço","tipologia":"Retrofit"},{"id":"OBR-0122","evId":"EV-0122","codigoOriginal":"0000","nome":"Agência Transfusional HS do Coração Bela Suíça","tipo":"Hospital","cidade":"Curitiba","uf":"PR","regiao":"Sul","tempoObra":"45","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0123","evId":"EV-0123","codigoOriginal":"4331","nome":"Adequação VISA HS Geral Joinville (Conforto)","tipo":"Hospital","cidade":"Joinville","uf":"SC","regiao":"Sul","tempoObra":"134","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0124","evId":"EV-0124","codigoOriginal":"4377","nome":"Adequação VISA HS Geral Joinville","tipo":"Hospital","cidade":"Joinville","uf":"SC","regiao":"Sul","tempoObra":"98","classificacao":"Adequação Regulatória","tipologia":"Retrofit"},{"id":"OBR-0125","evId":"EV-0125","codigoOriginal":"4408","nome":"Adequação VISA HS Brígida","tipo":"Hospital","cidade":"Curitiba","uf":"PR","regiao":"Sul","tempoObra":"360","classificacao":"Adequação Regulatória","tipologia":"Retrofit"}];
+
+const analistas=["André","Ascal","Cícero","Herbson","Leonardo","Luiz","Matheus","Mário","Robério","Rosa","Samuel","Skarth","Thalles","Yargo"];
+const tiposUnidade=["Clínica","Hospital","Diagnóstico","Pronto Atendimento","Administrativo","Centro de Distribuição","TEA","Coleta","Medprev"];
+const classificacoes=["Adequação Regulatória","Eficiência Operacional","Fachada","Obra Emergencial","Obra Estratégica","Suficiência de Rede","Verticalização","Venda de Serviços","Padronização de Unidade"];
+const tipologias=["Nova unidade","Retrofit","Ampliação"];
+const tiposAtividade=["Emissão inicial","Revisão de orçamento","SIC"];
+const ufsBrasil=["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+const regioes=["Centro Oeste","Nordeste","Norte","Sudeste","Sul"];
+const statusList=["Fazer","Fazendo","Pausado","Aguardando Validação Sala Técnica","Aguardando Validação Obras","Concluído","Cancelado"];
+
+const STATUS_COLORS={
+  "Fazer":"#1D6FEB","Fazendo":"#6530C8","Pausado":"#C0200A",
+  "Aguardando Validação Sala Técnica":"#A06200","Aguardando Validação Obras":"#0878A0",
+  "Concluído":"#047857","Cancelado":"#4A6080"
+};
+
+
+
+/* ══ NOVA DEMANDA ══ */
+let _eiObraSelecionada = null;
+let _eiModoCriacao = false;
+
+function mostrarEtapa(n){
+  document.getElementById('eiEtapa1').style.display = n===1 ? 'block' : 'none';
+  document.getElementById('eiEtapa2').style.display = n===2 ? 'block' : 'none';
+}
+
+function openNovaDemanda(){
+  _eiModoCriacao = true;
+  _eiObraSelecionada = null;
+  _eiCodigo = '__novo__';
+  if(formData['__novo__']) delete formData['__novo__'];
+
+  mostrarEtapa(1);
+
+  // Bloco obra+tipo visível
+  document.getElementById('eiNovaObraBlock').style.display = 'block';
+  document.getElementById('ei_obraSearch').value = '';
+  document.getElementById('ei_obraList').innerHTML = '';
+  document.getElementById('ei_obraSelecionada').style.display = 'none';
+  fillSelect('ei_tipoAtividade', tiposAtividade);
+  document.getElementById('ei_tipoAtividade').value = 'Emissão inicial';
+
+  document.getElementById('eiTransitions').style.display = 'none';
+
+  // Header
+  document.getElementById('eiTitle').textContent = 'Nova Demanda';
+  document.getElementById('eiSub').textContent = 'Etapa 1 de 2 · Identificação';
+
+  // Limpa campos
+  const ei = getEIData('__novo__');
+  renderAnalistaChips('');
+  document.getElementById('ei_descricao').value = '';
+  document.getElementById('ei_prioridade').value = 'Média';
+  fillSelect('ei_sprint', sprints.map(s=>s.nome));
+  document.getElementById('ei_sprint').value = activeSprint();
+  atualizarPeriodoSprintEI();
+  ['ei_dataInicio','ei_dataPrevista','ei_dataMetaObras','ei_dataEnvioObras','ei_dataValidacaoObras','ei_dataEntregaReal']
+    .forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('#ei_hintObras,#ei_hintEntrega').forEach(el=>el.textContent='');
+
+  _eiProjetosList = [...PROJETOS_PADRAO];
+  _projAberto = null;
+  renderProjetosGrid(ei);
+
+  trocarTipoAtividade(); // ajusta visibilidade conforme tipo
+
+  document.getElementById('eiOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('ei_obraSearch').focus(), 60);
+}
+
+function avancarEtapa2(){
+  // Validações da Etapa 1
+  if(!_eiObraSelecionada){
+    alert('Selecione uma obra para vincular a demanda.');
+    return;
+  }
+  const tipo = document.getElementById('ei_tipoAtividade').value;
+  if(tipo !== 'Emissão inicial'){
+    return; // tipos em construção não avançam
+  }
+  if(!document.getElementById('ei_descricao').value.trim()){
+    alert('Informe a descrição da atividade.');
+    return;
+  }
+  // Resumo no topo da etapa 2
+  document.getElementById('eiResumoTopo').style.display = 'flex';
+  document.getElementById('ei_resumoDesc').textContent =
+    document.getElementById('ei_descricao').value.trim();
+  document.getElementById('eiSub').textContent = 'Etapa 2 de 2 · Detalhamento';
+  mostrarEtapa(2);
+  setTimeout(()=>document.getElementById('ei_dataInicio').focus(), 60);
+}
+
+function voltarEtapa1(){
+  document.getElementById('eiSub').textContent = 'Etapa 1 de 2 · Identificação';
+  mostrarEtapa(1);
+}
+
+function filtrarObrasEI(){
+  const q = document.getElementById('ei_obraSearch').value.toLowerCase().trim();
+  const list = document.getElementById('ei_obraList');
+  if(!q){ list.innerHTML = ''; return; }
+  const results = obras.filter(o=>{
+    const chave = gerarChave(o);
+    return [o.nome, o.cidade, o.uf, o.tipo, chave].join(' ').toLowerCase().includes(q);
+  }).slice(0, 8);
+  if(results.length === 0){
+    list.innerHTML = '<div style="padding:10px 12px;font-size:13px;color:var(--muted)">Nenhuma obra encontrada.</div>';
+    return;
+  }
+  list.innerHTML = results.map(o=>{
+    const chave = gerarChave(o);
+    return `<div class="obra-item" onclick="selecionarObraEI('${o.id}')">
+      <div class="obra-item-nome">${o.nome}</div>
+      <div class="obra-item-chave">${chave} · ${o.cidade}/${o.uf}</div>
+    </div>`;
+  }).join('');
+}
+
+function selecionarObraEI(obraId){
+  const o = obras.find(x=>x.id===obraId);
+  if(!o) return;
+  _eiObraSelecionada = o;
+  document.getElementById('ei_obraNome').textContent = o.nome;
+  document.getElementById('ei_obraChave').textContent = gerarChave(o) + ' · ' + o.cidade + '/' + o.uf;
+  document.getElementById('ei_obraSelecionada').style.display = 'block';
+  document.getElementById('ei_obraSearch').value = '';
+  document.getElementById('ei_obraList').innerHTML = '';
+  setTimeout(()=>document.getElementById('ei_descricao').focus(), 60);
+}
+
+function limparObraEI(){
+  _eiObraSelecionada = null;
+  document.getElementById('ei_obraSelecionada').style.display = 'none';
+}
+
+function trocarTipoAtividade(){
+  const tipo = document.getElementById('ei_tipoAtividade').value;
+  document.getElementById('eiTitle').textContent = 'Nova Demanda — ' + tipo;
+  const emConstrucao = (tipo !== 'Emissão inicial');
+  // Mostra aviso e esconde os dados básicos quando o tipo ainda não tem formulário
+  document.getElementById('eiAvisoConstrucao').style.display = emConstrucao ? 'block' : 'none';
+  document.getElementById('eiAvisoTitulo').textContent = 'Formulário "' + tipo + '" em construção';
+  document.getElementById('eiDadosBasicos').style.display = emConstrucao ? 'none' : 'block';
+  // Botão Avançar desabilitado para tipos em construção
+  const btn = document.getElementById('eiBtnAvancar');
+  btn.style.opacity = emConstrucao ? '.45' : '1';
+  btn.style.pointerEvents = emConstrucao ? 'none' : 'auto';
+}
+
+/* ══ EMISSÃO INICIAL ══ */
+const PROJETOS_PADRAO = [
+  {cod:'ARQ',nome:'Arquitetura'},
+  {cod:'CMV',nome:'Comunicação Visual'},
+  {cod:'ELE',nome:'Elétrico'},
+  {cod:'HID',nome:'Hidrossanitário'},
+  {cod:'CLI',nome:'Climatização'},
+  {cod:'SCI',nome:'Sist. Combate a Incêndio'},
+  {cod:'STR',nome:'Estrutural'},
+  {cod:'ELO',nome:'Elétrica de Obras'},
+  {cod:'DRE',nome:'Drenagem'},
+];
+
+const formData = {};
+let _eiCodigo = null;
+let _eiProjetosList = [];
+
+function getEIData(codigo){
+  if(!formData[codigo]) formData[codigo] = {ei:{
+    descricao:'',analista:'',prioridade:'Média',sprint:'',
+    dataInicio:'',dataPrevista:'',dataMetaObras:'',dataEnvioObras:'',dataValidacaoObras:'',observacao:'',dataEntregaReal:'',evAtualizado:'',
+    projetos:{},projetosCustom:[]
+  }};
+  return formData[codigo].ei;
+}
+
+function openEIForm(codigo){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return;
+  _eiCodigo = codigo;
+  _eiModoCriacao = false;
+  const ei = getEIData(codigo);
+
+  // Modo edição: vai direto à Etapa 2 (detalhamento)
+  document.getElementById('eiNovaObraBlock').style.display = 'none';
+  document.getElementById('eiTransitions').style.display = '';
+  mostrarEtapa(2);
+  // Esconde botão "Voltar" (não há etapa 1 em modo edição)
+  document.getElementById('eiResumoTopo').style.display = 'none';
+
+  // Header
+  const obra = obras.find(o=>o.nome===d.obra);
+  const chave = obra ? gerarChave(obra) : '—';
+  document.getElementById('eiTitle').textContent = d.codigo + ' — Emissão Inicial';
+  document.getElementById('eiSub').textContent = d.obra + ' · ' + chave + ' · ' + d.sprint;
+
+  // Status + transitions strip
+  renderEIStatus(d);
+
+  // Basic fields
+  renderAnalistaChips(ei.analista||'');
+  document.getElementById('ei_descricao').value = ei.descricao || '';
+  document.getElementById('ei_observacao').value = ei.observacao || '';
+  document.getElementById('ei_prioridade').value = ei.prioridade || d.prioridade || 'Média';
+
+  // Sprint
+  fillSelect('ei_sprint', sprints.map(s=>s.nome));
+  document.getElementById('ei_sprint').value = ei.sprint || d.sprint || activeSprint();
+  atualizarPeriodoSprintEI();
+
+  // Dates
+  ['ei_dataInicio','ei_dataPrevista','ei_dataMetaObras','ei_dataEnvioObras','ei_dataValidacaoObras','ei_dataEntregaReal']
+    .forEach(id=>{
+      const key = id.replace('ei_','');
+      document.getElementById(id).value = ei[key] || '';
+    });
+  updateEIHints(d);
+
+  // Projects
+  _eiProjetosList = [
+    ...PROJETOS_PADRAO,
+    ...(ei.projetosCustom||[]).map(cod=>({cod,nome:cod}))
+  ];
+  _projAberto = null;
+  renderProjetosGrid(ei);
+
+  document.getElementById('eiOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('ei_descricao').focus(), 60);
+}
+
+function renderEIStatus(d){
+  const color  = STATUS_COLORS[d.status] || '#667085';
+  const dimBg  = STATUS_DIM[d.status]    || 'rgba(0,0,0,.05)';
+  const allowed = TRANSITIONS[d.status]  || [];
+  document.getElementById('eiTransitions').innerHTML = `
+    <div class="ei-transitions">
+      <div class="status-current" style="background:${dimBg};border:1px solid ${color}30;flex-shrink:0">
+        <div class="sc-dot" style="background:${color}"></div>
+        <div>
+          <div class="sc-label">Status atual</div>
+          <div class="sc-status" style="color:${color};font-size:13px">${d.status}</div>
+        </div>
+      </div>
+      ${allowed.length ? `
+        <div class="move-select-wrap">
+          <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;display:block">Mover para</label>
+          <select class="move-select" onchange="if(this.value){moverDemandaEI('${d.codigo}',this.value);this.value=''}">
+            <option value="">Selecione o status…</option>
+            ${allowed.map(t=>{
+              const tc=STATUS_COLORS[t]||'#667085';
+              return `<option value="${t}">${t}</option>`;
+            }).join('')}
+          </select>
+        </div>` : ''}
+    </div>`;
+}
+
+// Valida se a demanda pode ir para "Concluído" (EV preenchido)
+function podeConcluir(codigo){
+  const ev = getEVdaObraPorDemanda(codigo);
+  const faltando = [];
+  if(!ev || !(ev.valorTotal > 0)) faltando.push('Valor total da obra');
+  if(!ev || !(ev.custoM2 > 0))   faltando.push('Custo por m²');
+  return { ok: faltando.length===0, faltando };
+}
+
+function avisarEVincompleto(faltando){
+  alert('Não é possível concluir esta demanda.\n\nPreencha no EV da obra:\n• ' +
+    faltando.join('\n• ') +
+    '\n\nAbra o EV pelo botão dentro da demanda para preencher.');
+}
+
+// Processa a conclusão: valida EV, pergunta pendência, registra.
+// Retorna true se a demanda foi concluída.
+function processarConclusao(codigo){
+  // 1. Bloqueio de EV (Valor total + Custo/m²)
+  const chk = podeConcluir(codigo);
+  if(!chk.ok){ avisarEVincompleto(chk.faltando); return false; }
+
+  // 2. Pergunta sobre pendência de cotação
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return false;
+  const temPendencia = confirm('Esta demanda possui alguma pendência de cotação?\n\nOK = Sim, há pendência\nCancelar = Não, sem pendências');
+  if(temPendencia){
+    let desc = prompt('Descreva a pendência de cotação:', d.pendenciaDesc || '');
+    if(desc === null){
+      // usuário cancelou o prompt → não conclui
+      return false;
+    }
+    desc = desc.trim();
+    if(!desc){
+      alert('É obrigatório descrever a pendência para concluir com pendência.');
+      return false;
+    }
+    d.pendencia = true;
+    d.pendenciaDesc = desc;
+  } else {
+    d.pendencia = false;
+    d.pendenciaDesc = '';
+  }
+  dbSave('demandas', demandaToDb(d));
+  return true;
+}
+
+function moverDemandaEI(codigo, novoStatus){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return;
+  const allowed = TRANSITIONS[d.status]||[];
+  if(!allowed.includes(novoStatus)) return;
+  if(novoStatus === 'Concluído'){
+    if(!processarConclusao(codigo)) return;
+  }
+  d.status = novoStatus;
+  dbSave('demandas', demandaToDb(d));
+  renderKanban();
+  renderEIStatus(d);
+  updateEIHints(d);
+}
+
+function updateEIHints(d){
+  const map = [
+      ['ei_hintObras',   'Aguardando Validação Obras'],
+    ['ei_hintEntrega', 'Concluído'],
+  ];
+  map.forEach(([id,target])=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const allowed = TRANSITIONS[d.status]||[];
+    if(allowed.includes(target)){
+      el.textContent = '⚡ Ao preencher, moverá para "'+target+'"';
+      el.className = 'auto-hint info';
+    } else {
+      el.textContent = '';
+    }
+  });
+}
+
+function onAutoDate(fieldId, targetStatus){
+  const val = document.getElementById(fieldId).value;
+  const d = demandas.find(x=>x.codigo===_eiCodigo);
+  if(!d || !val) return;
+  if(targetStatus === 'Concluído'){
+    if(!processarConclusao(_eiCodigo)){
+      document.getElementById(fieldId).value = ''; // reverte a data
+      return;
+    }
+  }
+  d.status = targetStatus;
+  renderKanban();
+  renderEIStatus(d);
+  updateEIHints(d);
+  // Feedback
+  const hintMap = {
+      'ei_dataEnvioObras':'ei_hintObras',
+    'ei_dataEntregaReal':'ei_hintEntrega'
+  };
+  const hintId = hintMap[fieldId];
+  if(hintId){
+    const el = document.getElementById(hintId);
+    el.textContent = '✓ Movido para "'+targetStatus+'"';
+    el.className = 'auto-hint ok';
+  }
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function atualizarPeriodoSprintEI(){
+  const nome = document.getElementById('ei_sprint').value;
+  const sprint = sprints.find(s=>s.nome===nome);
+  const el = document.getElementById('ei_sprintPeriodo');
+  if(!el) return;
+  el.textContent = (sprint && sprint.inicio && sprint.fim)
+    ? fmtDate(sprint.inicio)+' → '+fmtDate(sprint.fim) : '';
+}
+
+let _projAberto = null; // código do projeto com detalhes expandidos (só 1)
+
+function renderProjetos(ei){
+  const lista = document.getElementById('eiProjetosLista');
+  lista.innerHTML = _eiProjetosList.map(p=>{
+    const pr = ei.projetos[p.cod] || {};
+    const checked = !!pr.ativo;
+    const open = (_projAberto === p.cod);
+    return `<div class="proj-row ${open?'open':''} ${checked?'checked':''}">
+      <div class="proj-head">
+        <div class="proj-check ${checked?'on':''}" onclick="toggleProjetoCheck('${p.cod}')" title="Marcar se este projeto faz parte da demanda"></div>
+        <span class="proj-code">${p.cod}</span>
+        <span class="proj-name">${p.nome}</span>
+        <button class="proj-caret-btn" onclick="toggleProjetoExpand('${p.cod}')" title="Abrir/fechar detalhes">
+          <span class="proj-caret">▼</span>
+        </button>
+      </div>
+      <div class="proj-body">
+        <div class="g3">
+          <div class="field"><label>Responsável pela postagem</label>
+            <input type="text" value="${pr.responsavel||''}" placeholder="Nome"
+              onchange="saveProjField('${p.cod}','responsavel',this.value)"></div>
+          <div class="field"><label>Data de postagem</label>
+            <input type="date" value="${pr.dataPostagem||''}"
+              onchange="saveProjField('${p.cod}','dataPostagem',this.value)"></div>
+          <div class="field"><label>Caminho do arquivo</label>
+            <input type="text" value="${pr.caminho||''}" placeholder="\\\\servidor\\pasta"
+              onchange="saveProjField('${p.cod}','caminho',this.value)"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Alias p/ compatibilidade
+function renderProjetosGrid(ei){ renderProjetos(ei); }
+
+// Caixinha → marca/desmarca se o projeto faz parte da demanda
+function toggleProjetoCheck(cod){
+  const ei = getEIData(_eiCodigo);
+  if(!ei.projetos[cod]) ei.projetos[cod]={ativo:false,dataRecebimento:'',responsavel:'',dataPostagem:'',caminho:''};
+  ei.projetos[cod].ativo = !ei.projetos[cod].ativo;
+  // Ao marcar, abre os detalhes automaticamente; ao desmarcar, fecha se estava aberto
+  if(ei.projetos[cod].ativo){
+    _projAberto = cod;
+  } else if(_projAberto === cod){
+    _projAberto = null;
+  }
+  renderProjetos(ei);
+}
+
+// Setinha → abre/fecha detalhes (só 1 aberto por vez), independente da marcação
+function toggleProjetoExpand(cod){
+  _projAberto = (_projAberto === cod) ? null : cod;
+  renderProjetos(getEIData(_eiCodigo));
+}
+
+function recolherTodosProjetos(){
+  _projAberto = null;
+  renderProjetos(getEIData(_eiCodigo));
+}
+
+function toggleProjetoEI(cod){ toggleProjetoCheck(cod); }
+
+function saveProjField(cod, field, value){
+  const ei = getEIData(_eiCodigo);
+  if(!ei.projetos[cod]) ei.projetos[cod]={ativo:true};
+  ei.projetos[cod][field] = value;
+}
+
+function addProjetoCustom(){
+  const input = document.getElementById('ei_newProjeto');
+  const cod = input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!cod){alert('Digite um código válido.');return}
+  if(_eiProjetosList.find(p=>p.cod===cod)){alert('Este código já existe na lista.');return}
+  const ei = getEIData(_eiCodigo);
+  if(!ei.projetosCustom) ei.projetosCustom=[];
+  ei.projetosCustom.push(cod);
+  _eiProjetosList.push({cod,nome:cod});
+  input.value='';
+  renderProjetosGrid(ei);
+}
+
+function salvarEI(){
+  // MODO CRIAÇÃO: cria a demanda primeiro
+  if(_eiModoCriacao){
+    if(!_eiObraSelecionada){
+      alert('Selecione uma obra para vincular a demanda.');
+      return;
+    }
+    if(!document.getElementById('ei_descricao').value.trim()){
+      alert('Informe a descrição da atividade.');
+      return;
+    }
+    const tipoAtividade = document.getElementById('ei_tipoAtividade').value;
+    const novoId = 'DEM-' + String(demandas.length + 1).padStart(3,'0');
+    const prazoRaw = document.getElementById('ei_dataPrevista').value;
+    const prazoFmt = prazoRaw
+      ? new Date(prazoRaw + 'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})
+      : '—';
+    const novaDem = {
+      codigo: novoId,
+      obra: _eiObraSelecionada.nome,
+      analista: document.getElementById('ei_analista').value || '—',
+      prioridade: document.getElementById('ei_prioridade').value,
+      valor: '—',
+      prazo: prazoFmt,
+      status: 'Fazer',
+      tipo: tipoAtividade,
+      sprint: document.getElementById('ei_sprint').value
+    };
+    demandas.push(novaDem);
+    dbSave('demandas', demandaToDb(novaDem));
+    // Migra os dados do form temporário para o ID real
+    formData[novoId] = formData['__novo__'] || {ei:{}};
+    delete formData['__novo__'];
+    _eiCodigo = novoId;
+    _eiModoCriacao = false;
+  }
+
+  const ei = getEIData(_eiCodigo);
+  ei.descricao       = document.getElementById('ei_descricao').value;
+  ei.analista        = document.getElementById('ei_analista').value;
+  ei.prioridade      = document.getElementById('ei_prioridade').value;
+  ei.sprint          = document.getElementById('ei_sprint').value;
+  ei.dataInicio      = document.getElementById('ei_dataInicio').value;
+  ei.dataPrevista    = document.getElementById('ei_dataPrevista').value;
+  ei.dataMetaObras   = document.getElementById('ei_dataMetaObras').value;
+  ei.dataEnvioObras     = document.getElementById('ei_dataEnvioObras').value;
+  ei.dataValidacaoObras = document.getElementById('ei_dataValidacaoObras').value;
+  ei.observacao         = document.getElementById('ei_observacao').value;
+  ei.dataEntregaReal = document.getElementById('ei_dataEntregaReal').value;
+
+  // Sync back to demanda object
+  const d = demandas.find(x=>x.codigo===_eiCodigo);
+  if(d){ d.analista=ei.analista||'—'; d.prioridade=ei.prioridade; d.sprint=ei.sprint; }
+
+  // Sync ao analista e prioridade
+  const _d2=demandas.find(x=>x.codigo===_eiCodigo);
+  if(_d2){ _d2.analista=ei.analista||'—'; _d2.prioridade=ei.prioridade; _d2.sprint=ei.sprint;
+    dbSave('demandas', demandaToDb(_d2)); }
+  dbSave('form_data_ei', eiToDb(_eiCodigo, ei));
+  closeDrawer('eiOverlay');
+  renderKanban();
+}
+
+
+function renderAnalistaChips(selecionado){
+  const wrap = document.getElementById('ei_analistaChips');
+  if(!wrap) return;
+  wrap.innerHTML = analistas.map(a=>`
+    <button type="button" class="anal-chip ${a===selecionado?'on':''}"
+      onclick="selecionarAnalista('${a}')">${a}</button>`).join('');
+  document.getElementById('ei_analista').value = selecionado||'';
+}
+
+function selecionarAnalista(nome){
+  const current = document.getElementById('ei_analista').value;
+  const novo = current===nome ? '' : nome; // toggle
+  renderAnalistaChips(novo);
+}
+
+/* REGRAS DE TRANSIÇÃO */
+const TRANSITIONS = {
+  'Fazer':                             ['Fazendo','Cancelado'],
+  'Fazendo':                           ['Pausado','Aguardando Validação Sala Técnica','Cancelado'],
+  'Pausado':                           ['Fazer','Fazendo','Cancelado'],
+  'Aguardando Validação Sala Técnica': ['Fazendo','Aguardando Validação Obras','Cancelado'],
+  'Aguardando Validação Obras':        ['Fazendo','Concluído','Cancelado'],
+  'Concluído':                         ['Fazer'],
+  'Cancelado':                         ['Fazer']
+};
+
+/* Dim (background) para cada status no badge */
+const STATUS_DIM = {
+  'Fazer':'rgba(29,111,235,.10)',           'Fazendo':'rgba(101,48,200,.10)',
+  'Pausado':'rgba(192,32,10,.10)',          'Aguardando Validação Sala Técnica':'rgba(160,98,0,.10)',
+  'Aguardando Validação Obras':'rgba(8,120,160,.10)',
+  'Concluído':'rgba(4,120,87,.10)',         'Cancelado':'rgba(74,96,128,.12)'
+};
+
+let _demandaAtiva = null;
+
+function openDemandaDrawer(codigo){
+  const _d = demandas.find(x=>x.codigo===codigo);
+  if(_d && _d.tipo==='Emissão inicial'){
+    openEIForm(codigo);
+    return;
+  }
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return;
+  _demandaAtiva = codigo;
+  const color  = STATUS_COLORS[d.status] || '#667085';
+  const dimBg  = STATUS_DIM[d.status]    || 'rgba(0,0,0,.05)';
+
+  document.getElementById('ddTitle').textContent = d.codigo + ' — ' + d.obra;
+  document.getElementById('ddSub').textContent   = d.sprint + ' · ' + d.analista;
+
+  /* Status atual */
+  document.getElementById('ddStatusBadge').innerHTML = `
+    <div class="status-current" style="background:${dimBg};border:1px solid ${color}30">
+      <div class="sc-dot" style="background:${color}"></div>
+      <div>
+        <div class="sc-label">Status atual</div>
+        <div class="sc-status" style="color:${color}">${d.status}</div>
+      </div>
+    </div>`;
+
+  /* Detalhes */
+  document.getElementById('ddDetails').innerHTML = [
+    ['Analista', d.analista], ['Tipo de atividade', d.tipo],
+    ['Prioridade', d.prioridade], ['Sprint', d.sprint],
+    ['Valor', d.valor], ['Prazo', d.prazo]
+  ].map(([lbl,val])=>`
+    <div class="dd-field">
+      <div class="dd-field-label">${lbl}</div>
+      <div class="dd-field-value">${val||'—'}</div>
+    </div>`).join('');
+
+  /* Botões de transição */
+  const allowed = TRANSITIONS[d.status] || [];
+  if(allowed.length === 0){
+    document.getElementById('ddTransitions').innerHTML =
+      '<div class="no-transitions">Nenhuma transição disponível para este status.</div>';
+  } else {
+    document.getElementById('ddTransitions').innerHTML = allowed.map(target=>{
+      const tc = STATUS_COLORS[target] || '#667085';
+      const td = STATUS_DIM[target]    || 'rgba(0,0,0,.05)';
+      return `<button class="tr-btn" style="background:${td};border-color:${tc}28"
+        onclick="moverDemanda('${codigo}','${target}')">
+        <span class="tr-dot" style="background:${tc}"></span>
+        <span>${target}</span>
+        <span class="tr-arrow">→</span>
+      </button>`;
+    }).join('');
+  }
+
+  document.getElementById('demandaOverlay').classList.add('open');
+}
+
+function moverDemanda(codigo, novoStatus){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return;
+  const allowed = TRANSITIONS[d.status] || [];
+  if(!allowed.includes(novoStatus)) return; /* segurança */
+  d.status = novoStatus;
+  closeDrawer('demandaOverlay');
+  renderKanban();
+}
+
+let obras=[...obrasBase];
+let sprints=[
+  {nome:"Sprint 10",inicio:"2026-05-25",fim:"2026-06-14",status:"Encerrada"},
+  {nome:"Sprint 11",inicio:"2026-06-15",fim:"2026-06-28",status:"Ativa"},
+  {nome:"Sprint 12",inicio:"2026-06-29",fim:"2026-07-12",status:"Planejada"}
+];
+let demandas=[];
+
+/* HELPERS */
+function opt(v){return`<option>${v}</option>`}
+function fillSelect(id,values,firstLabel=null){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML="";
+  if(firstLabel!==null)el.insertAdjacentHTML("beforeend",`<option value="">${firstLabel}</option>`);
+  values.forEach(v=>el.insertAdjacentHTML("beforeend",opt(v)));
+}
+function fillAllSelects(){
+  fillSelect("analistaFilter",["Todos",...analistas]);
+  fillSelect("tipoAtividadeFilter",["Todos",...tiposAtividade]);
+  fillSelect("ufFilter",ufsBrasil,"Todos os estados");
+  fillSelect("tipoFilter",tiposUnidade,"Todos os tipos");
+  fillSelect("regiaoFilter",regioes,"Todas as regiões");
+  fillSelect("newTipoUnidade",tiposUnidade);
+  fillSelect("newUF",ufsBrasil);
+  fillSelect("newRegiao",regioes);
+  fillSelect("newClassificacao",classificacoes);
+  fillSelect("newTipologia",tipologias);
+  fillSelect("newAnalista",analistas);
+  fillSelect("newTipoAtividade",tiposAtividade);
+  fillSelect("newStatus",statusList);
+}
+function activeSprint(){return sprints.find(s=>s.status==="Ativa")?.nome||sprints[0]?.nome||"Sprint 11"}
+function renderSprintSelects(){
+  const names=sprints.map(s=>s.nome);
+  fillSelect("sprintFilter",["Todas",...names]);
+  document.getElementById("sprintFilter").value=activeSprint();
+  fillSelect("newSprint",names);
+  document.getElementById("newSprint").value=activeSprint();
+  document.getElementById("activeSprintChip").textContent="Sprint atual: "+activeSprint();
+}
+function showView(view){
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+view).classList.add("active");
+}
+document.querySelectorAll(".nav-btn").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));
+function priorityClass(p){return p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+
+/* KANBAN */
+
+/* ══ SPRINT TABS ══ */
+let _sprintFiltro = 'Todas';
+
+function renderSprintTabs(){
+  const tabs = document.getElementById('sprintTabs');
+  if(!tabs) return;
+  const opcoes = ['Todas', ...sprints.map(s=>s.nome)];
+  tabs.innerHTML = opcoes.map(nome=>`
+    <button class="sprint-tab ${_sprintFiltro===nome?'on':''}"
+      onclick="selecionarSprintTab('${nome}')">${nome}</button>`).join('');
+}
+
+function selecionarSprintTab(nome){
+  _sprintFiltro = nome;
+  // Sync sprintFilter oculto (usado por filteredDemandas)
+  const sf = document.getElementById('sprintFilter');
+  if(sf) sf.value = nome;
+  renderSprintTabs();
+  renderKanban();
+  if(typeof renderLista==='function' && _viewMode==='lista') renderLista();
+}
+
+function limparFiltrosOP(){
+  _sprintFiltro='Todas';
+  const sf=document.getElementById('sprintFilter');
+  if(sf) sf.value='Todas';
+  document.getElementById('analistaFilter').value='Todos';
+  document.getElementById('tipoAtividadeFilter').value='Todos';
+  renderSprintTabs();
+  renderKanban();
+}
+
+/* ══ SLA HELPERS ══ */
+function parsePrazo(d){
+  const ei = formData[d.codigo]?.ei;
+  if(ei?.dataPrevista) return new Date(ei.dataPrevista+'T00:00:00');
+  if(!d.prazo||d.prazo==='—') return null;
+  const pts=d.prazo.trim().split('/');
+  if(pts.length>=2){
+    const yr=pts.length>=3?parseInt(pts[2]):new Date().getFullYear();
+    return new Date(yr,parseInt(pts[1])-1,parseInt(pts[0]));
+  }
+  return null;
+}
+function slaOk(d){ const p=parsePrazo(d); if(!p)return null; const t=new Date();t.setHours(0,0,0,0);return p>=t; }
+
+/* ══ KPI SPRINT ══ */
+function renderKPIsSprint(){
+  const grid=document.getElementById('kpiSprintGrid');
+  if(!grid) return;
+  const data=filteredDemandas();
+  const today=new Date();today.setHours(0,0,0,0);
+
+  const fazer    =data.filter(d=>d.status==='Fazer');
+  const fazendo  =data.filter(d=>d.status==='Fazendo');
+  const pausado  =data.filter(d=>d.status==='Pausado');
+  const valST    =data.filter(d=>d.status==='Aguardando Validação Sala Técnica');
+  const valObras =data.filter(d=>d.status==='Aguardando Validação Obras');
+  const concluido=data.filter(d=>d.status==='Concluído');
+  const cancelado=data.filter(d=>d.status==='Cancelado');
+  const validation=[...valST,...valObras];
+  const backlog=data.filter(d=>!['Concluído','Cancelado'].includes(d.status));
+
+  const onT=arr=>arr.filter(d=>slaOk(d)===true).length;
+  const lat=arr=>arr.filter(d=>slaOk(d)===false).length;
+  const slaLine=arr=>{
+    const ok=onT(arr),la=lat(arr);
+    return `${ok>0?`<span class="ksc-ok">✓ ${ok} em dia</span>`:''} ${la>0?`<span class="ksc-late">⚠ ${la} atrasada${la>1?'s':''}</span>`:''}`;
+  };
+
+  const valorTotal=concluido.reduce((s,d)=>{
+    const ev=getEVdaObraPorDemanda(d.codigo);return s+(ev?.valorTotal||0);},0);
+  const pendentes=data.filter(d=>d.pendencia).length;
+
+  const cards=[
+    {label:'Total na Sprint',val:data.length,cc:'var(--blue-700)',sub:''},
+    {label:'Backlog',val:backlog.length,cc:'var(--orange-700)',
+      sub:`<span class="ksc-info">${backlog.length} não concluída${backlog.length!==1?'s':''}</span>${slaLine(backlog)}`},
+    {label:'A Iniciar',val:fazer.length,cc:'var(--blue-600)',sub:slaLine(fazer)},
+    {label:'Fazendo',val:fazendo.length,cc:'var(--purple)',sub:slaLine(fazendo)},
+    {label:'Pausado',val:pausado.length,cc:'var(--red)',sub:slaLine(pausado)},
+    {label:'Validação',val:validation.length,cc:'var(--amber)',sub:slaLine(validation)},
+    {label:'Concluído',val:concluido.length,cc:'var(--green)',
+      sub:`${onT(concluido)>0?`<span class="ksc-ok">✓ ${onT(concluido)} no prazo</span>`:''} ${lat(concluido)>0?`<span class="ksc-late">✗ ${lat(concluido)} fora</span>`:''}`},
+    {label:'Cancelado',val:cancelado.length,cc:'var(--slate)',sub:''},
+    {label:'Com Pendência',val:pendentes,cc:'var(--amber)',sub:pendentes?`<span class="ksc-info">de cotação</span>`:''},
+    {label:'Valor Total',val:valorTotal>0?moneyBR(valorTotal):'R$ 0',isText:true,cc:'var(--green)',
+      sub:`<span class="ksc-info">EVs de demandas concluídas</span>`},
+  ];
+
+  grid.innerHTML=cards.map(cd=>`
+    <div class="ksc" style="--cc:${cd.cc}">
+      <div class="ksc-label">${cd.label}</div>
+      <div class="ksc-val ${cd.isText?'text':''}">${cd.val}</div>
+      <div class="ksc-subs">${cd.sub}</div>
+    </div>`).join('');
+}
+
+function filteredDemandas(){
+  const sprint=document.getElementById("sprintFilter").value;
+  const analista=document.getElementById("analistaFilter").value;
+  const tipo=document.getElementById("tipoAtividadeFilter").value;
+  return demandas.filter(d=>(sprint==="Todas"||d.sprint===sprint)&&(analista==="Todos"||d.analista===analista)&&(tipo==="Todos"||d.tipo===tipo));
+}
+function renderKanban(){
+  const kanban=document.getElementById("kanban");
+  const data=filteredDemandas();
+  kanban.innerHTML="";
+  statusList.forEach(status=>{
+    const list=data.filter(d=>d.status===status);
+    const color=STATUS_COLORS[status]||"#1D6FEB";
+    const col=document.createElement("div");
+    col.className="kanban-col";col.style.setProperty("--cc",color);
+    col.innerHTML=`<div class="kanban-head"><span class="kh-label">${status}</span><span class="kh-count" style="background:${color}">${list.length}</span></div>
+      <div class="kanban-body">${list.map(item=>{
+        const concluida = item.status==='Concluído';
+        const ev = concluida ? getEVdaObraPorDemanda(item.codigo) : null;
+        const evBadge = (concluida && ev && ev.valorTotal>0)
+          ? `<div class="task-ev-total">Valor total do EV<strong>${moneyBR(ev.valorTotal)}</strong></div>`
+          : '';
+        const pendBadge = (concluida && item.pendencia)
+          ? `<div class="task-pendencia" title="${(item.pendenciaDesc||'').replace(/"/g,'&quot;')}">⚠️ Pendência de cotação<span>${item.pendenciaDesc||''}</span></div>`
+          : '';
+        return `<div class="task" onclick="openDemandaDrawer('${item.codigo}')">
+        <div class="task-hd"><span class="task-code">${item.codigo}</span><span class="priority ${priorityClass(item.prioridade)}">${item.prioridade}</span></div>
+        <div class="task-title">${item.obra}</div>
+        <div class="task-attrs">
+          <div>👤 ${item.analista}</div><div>🏷 ${item.tipo}</div>
+          <div>⚡ ${item.sprint}</div><div>📅 ${item.prazo}</div>
+        </div>${evBadge}${pendBadge}</div>`;
+      }).join("")||'<div class="empty">Nenhuma demanda</div>'}</div>`;
+    kanban.appendChild(col);
+  });
+  renderKPIsSprint();
+  if(document.getElementById('listaDemandas')?.style.display!=='none') renderLista();
+}
+
+let _viewMode = 'kanban';
+
+function setViewMode(mode){
+  _viewMode = mode;
+  const isKanban = mode === 'kanban';
+  document.getElementById('kanban').style.display        = isKanban ? '' : 'none';
+  document.getElementById('listaDemandas').style.display = isKanban ? 'none' : 'block';
+  document.getElementById('btnKanban').classList.toggle('active', isKanban);
+  document.getElementById('btnLista').classList.toggle('active', !isKanban);
+  if(!isKanban) renderLista();
+}
+
+function renderLista(){
+  const data = filteredDemandas();
+  const tbody = document.getElementById('listaDemandasBody');
+  if(!tbody) return;
+  if(data.length===0){
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--ghost)">Nenhuma demanda encontrada.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(item=>{
+    const color = STATUS_COLORS[item.status]||'#667085';
+    const pendStr = item.pendencia ? `<span class="lista-pend">⚠️ ${item.pendenciaDesc||'Pendência'}</span>` : '—';
+    return `<tr onclick="openDemandaDrawer('${item.codigo}')" style="cursor:pointer">
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--blue-700);font-weight:600">${item.codigo}</td>
+      <td style="font-weight:600;color:var(--ink);min-width:220px">${item.obra}</td>
+      <td style="font-size:12px">${item.tipo}</td>
+      <td>${item.analista}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${item.sprint}</td>
+      <td><span class="lista-status-dot" style="color:${color}"><span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;display:inline-block"></span>${item.status}</span></td>
+      <td><span class="priority ${priorityClass(item.prioridade)}">${item.prioridade}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${item.prazo||'—'}</td>
+      <td>${pendStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* OBRAS TABLE */
+function renderObras(){
+  const search=document.getElementById("obraSearch").value.toLowerCase();
+  const uf=document.getElementById("ufFilter").value;
+  const tipo=document.getElementById("tipoFilter").value;
+  const regiao=document.getElementById("regiaoFilter").value;
+  const filtered=obras.filter(o=>{
+    const chave=gerarChave(o);
+    const src=[o.id,o.evId,o.codigoOriginal,o.nome,o.cidade,o.uf,o.tipo,o.regiao,o.classificacao,o.tipologia,chave].join(" ").toLowerCase();
+    return(!search||src.includes(search))&&(!uf||o.uf===uf)&&(!tipo||o.tipo===tipo)&&(!regiao||o.regiao===regiao);
+  });
+  document.getElementById("obraCountChip").textContent=`${filtered.length} obras`;
+  document.getElementById("sideObrasCount").textContent=obras.length;
+  document.getElementById("totalObrasCard").textContent=obras.length;
+  document.getElementById("totalTiposCard").textContent=new Set(obras.map(o=>o.tipo).filter(Boolean)).size;
+  document.getElementById("totalRegioesCard").textContent=new Set(obras.map(o=>o.regiao).filter(Boolean)).size;
+  document.getElementById("totalEVsCard").textContent=obras.length;
+  document.getElementById("obrasTable").innerHTML=filtered.map(o=>{
+    const chave=gerarChave(o);
+    return`<tr>
+      <td><span class="chave-badge">${chave}</span></td>
+      <td class="td-code">${o.codigoOriginal||"—"}</td>
+      <td class="td-name">${o.nome}</td>
+      <td>${o.tipo||"—"}</td>
+      <td class="td-loc">${o.cidade||"—"}/${o.uf||"—"}</td>
+      <td>${o.regiao||"—"}</td>
+      <td style="text-align:center;font-family:'DM Mono',monospace;font-size:12px">${o.tempoObra||"—"}</td>
+      <td style="font-size:12.5px">${o.classificacao||"—"}</td>
+      <td style="font-size:12.5px">${o.tipologia||"—"}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;text-align:right">${o.areaEquivalente||"—"}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;text-align:right">${o.areaConstruida||"—"}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${o.ordemSAP||"—"}</td>
+      <td style="font-size:12px">${o.cnpj||"—"}</td>
+      <td style="font-size:12px;min-width:200px">${o.endereco||"—"}</td>
+      <td><button class="action-btn" onclick="openEV('${o.id}')">Abrir EV</button></td>
+    </tr>`;
+  }).join("");
+}
+
+/* SPRINTS */
+function renderSprints(){
+  document.getElementById("sprintsTable").innerHTML=sprints.map((s,i)=>{
+    const bc=s.status==="Ativa"?"badge-green":s.status==="Encerrada"?"badge-neutral":"badge-blue";
+    return`<tr><td><strong>${s.nome}</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px">${s.inicio||"—"}</td><td style="font-family:'DM Mono',monospace;font-size:12px">${s.fim||"—"}</td><td><span class="badge ${bc}">${s.status}</span></td>
+    <td style="display:flex;gap:6px"><button class="action-btn" onclick="setActiveSprint(${i})">Ativar</button><button class="action-btn" style="color:var(--red)" onclick="deleteSprint(${i})">Excluir</button></td></tr>`;
+  }).join("");
+  renderSprintSelects();renderKanban();
+}
+function addSprint(){
+  const nome=document.getElementById("newSprintName").value.trim();
+  const inicio=document.getElementById("newSprintStart").value;
+  const fim=document.getElementById("newSprintEnd").value;
+  const status=document.getElementById("newSprintStatus").value;
+  if(!nome||!inicio||!fim){alert("Preencha nome, data início e data fim.");return}
+  if(sprints.some(s=>s.nome.toLowerCase()===nome.toLowerCase())){alert("Sprint com esse nome já existe.");return}
+  if(status==="Ativa")sprints.forEach(s=>{if(s.status==="Ativa")s.status="Planejada"});
+  sprints.push({nome,inicio,fim,status});
+  document.getElementById("newSprintName").value="";document.getElementById("newSprintStart").value="";document.getElementById("newSprintEnd").value="";
+  renderSprints();
+}
+function setActiveSprint(i){sprints.forEach((s,j)=>{s.status=j===i?"Ativa":(s.status==="Ativa"?"Planejada":s.status);dbSave('sprints',sprintToDb(s));});renderSprints();}
+function deleteSprint(i){if(!confirm("Excluir esta sprint?"))return;const nome=sprints[i].nome;sprints.splice(i,1);dbDelete('sprints','nome',nome);renderSprints();}
+
+/* CONFIG LISTS */
+function renderChips(id,values){document.getElementById(id).innerHTML=values.map(v=>`<span class="chip-item">${v}</span>`).join("")}
+function renderConfigLists(){
+  renderChips("analistasChips",analistas);renderChips("tiposUnidadeChips",tiposUnidade);
+  renderChips("classificacoesChips",classificacoes);renderChips("tipologiasChips",tipologias);
+  renderChips("tiposAtividadeChips",tiposAtividade);renderChips("statusChips",statusList);
+}
+function addListItem(listName,inputId){
+  const input=document.getElementById(inputId);const value=(input.value||"").trim();
+  if(!value){alert("Digite um valor.");return}
+  const lists={analistas,tiposUnidade,classificacoes,tipologias,tiposAtividade,statusList};
+  const list=lists[listName];if(!list){return}
+  if(list.some(item=>item.toLowerCase()===value.toLowerCase())){alert("Item já existe.");return}
+  list.push(value);list.sort((a,b)=>a.localeCompare(b,"pt-BR"));input.value="";
+  
+// Kanban horizontal drag
+(function(){
+  const k = document.getElementById('kanban');
+  if(!k) return;
+  let down=false, sx=0, sl=0;
+  k.addEventListener('mousedown',e=>{
+    if(e.target.closest('.task,.proj-head,.proj-check,.proj-caret-btn,.move-select,.btn,.anal-chip')) return;
+    down=true; sx=e.pageX; sl=k.scrollLeft; k.classList.add('dragging');
+  });
+  document.addEventListener('mouseup',()=>{ down=false; k.classList.remove('dragging'); });
+  k.addEventListener('mousemove',e=>{ if(!down) return; e.preventDefault(); k.scrollLeft=sl-(e.pageX-sx); });
+  // Touch
+  let tx=0,tl=0;
+  k.addEventListener('touchstart',e=>{ tx=e.touches[0].pageX; tl=k.scrollLeft; },{passive:true});
+  k.addEventListener('touchmove',e=>{ k.scrollLeft=tl-(e.touches[0].pageX-tx); },{passive:true});
+})();
+
+fillAllSelects();renderSprintSelects();renderConfigLists();renderKanban();renderObras();
+}
+
+/* DRAWERS */
+function closeDrawer(id){document.getElementById(id).classList.remove("open")}
+function openNovaObra(){
+  const next=obras.length+1;
+  document.getElementById("newObraId").value=`OBR-${String(next).padStart(4,"0")}`;
+  document.getElementById("newStatus").value="Fazer";
+  document.getElementById("newTipoAtividade").value="Emissão inicial";
+  updateKeyPreview();
+  document.getElementById("novaObraOverlay").classList.add("open");
+}
+function createObra(){
+  const nome=document.getElementById("newNomeObra").value.trim();
+  if(!nome){alert("Informe o nome da obra.");return}
+  const id=document.getElementById("newObraId").value;
+  const evNumber=id.replace("OBR-","EV-");
+  const novaObra={id,evId:evNumber,codigoOriginal:document.getElementById("newCodigoOriginal").value.trim(),nome,tipo:document.getElementById("newTipoUnidade").value,cidade:document.getElementById("newCidade").value.trim(),uf:document.getElementById("newUF").value,regiao:document.getElementById("newRegiao").value,tempoObra:document.getElementById("newTempoObra").value,classificacao:document.getElementById("newClassificacao").value,tipologia:document.getElementById("newTipologia").value};
+  obras.push(novaObra);
+  dbSave("obras", obraToDb(novaObra));
+  demandas.push({codigo:`DEM-${String(demandas.length+1).padStart(3,"0")}`,obra:nome,analista:document.getElementById("newAnalista").value,prioridade:"Média",valor:"R$ 0",prazo:"—",status:document.getElementById("newStatus").value,tipo:document.getElementById("newTipoAtividade").value,sprint:document.getElementById("newSprint").value});
+  ["newCodigoOriginal","newNomeObra","newCidade","newTempoObra"].forEach(i=>document.getElementById(i).value="");
+  closeDrawer("novaObraOverlay");renderObras();renderKanban();showView("obras");
+}
+
+/* EV */
+const obraCostFields=["Fundações","Contenções","Estruturas","Adequações Civis","Instalações Elétricas","Instalações Hidrossanitárias","Instalações de Gases Medicinais","Instalações de Combate a Incêndio","Instalações de SPDA","Instalações de Climatização","Instalações de Exaustão","Infraestrutura de Dados/Voz/Seg. Patrimonial/CFTV/Chamada","Custos Indiretos"];
+const otherCostFields=["Projetos Técnicos","Projetos Legalização","Dados e Voz/Segurança Patrimonial/Chamada Hospitalar","Equipamentos de Climatização","Artefatos em Inox","Marcenaria","Réguas Medicinais","Gerador/Subestação/Transformador/Cubículos","Elevadores/Plataforma Elevatória","Compressor/Bomba de Vácuo/Driox","IT Médico/Nobreak","ETE/ETA","Correio Pneumático","Controle de Acessos","Planejamento de Obras","Contas de Consumo","Comunicação Visual Externa e Interna","Quadros Elétricos","SIC's","Sistemas de Automação","Taxa de Risco (5%)","Blindagem","Paisagismo e/ou Compensação Ambiental","Câmara Fria"];
+function buildCostFields(cId,fields){const c=document.getElementById(cId);c.innerHTML="";fields.forEach(label=>{const r=document.createElement("div");r.className="cost-row";r.innerHTML=`<div class="cost-label">${label}</div><input type="number" min="0" step="0.01" value="0" />`;c.appendChild(r)})}
+function moneyBR(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function sumInputs(sel){let t=0;document.querySelectorAll(sel).forEach(i=>t+=Number(i.value||0));return t}
+function calculateEV(){
+  const vo=sumInputs("#obraCosts input"),ou=sumInputs("#otherCosts input"),total=vo+ou;
+  const aeq=Number(document.getElementById("areaEquivalente").value||0),m2=aeq>0?total/aeq:0;
+  document.getElementById("sumValorObra").textContent=moneyBR(vo);document.getElementById("sumOutros").textContent=moneyBR(ou);
+  document.getElementById("sumEV").textContent=moneyBR(total);document.getElementById("sumM2").textContent=moneyBR(m2);
+}
+function abrirEVdaDemanda(){
+  // Descobre a obra vinculada à demanda em edição
+  let obra = null;
+  if(_eiModoCriacao && _eiObraSelecionada){
+    obra = _eiObraSelecionada;
+  } else {
+    const d = demandas.find(x=>x.codigo===_eiCodigo);
+    if(d) obra = obras.find(o=>o.nome===d.obra);
+  }
+  if(!obra){
+    alert('Selecione uma obra antes de abrir o EV.');
+    return;
+  }
+  // Mantém o formulário da demanda aberto por trás; abre o EV por cima
+  openEV(obra.id);
+}
+
+const evStore = {}; // evStore[obraId] = {obra:[...], outros:[...], areaEq, areaConst, valorTotal, custoM2}
+let _evObraAtual = null;
+
+function openEV(obraId){
+  const obra=obras.find(o=>o.id===obraId);if(!obra)return;
+  _evObraAtual = obraId;
+  const chave=gerarChave(obra);
+  document.getElementById("evTitle").textContent="EV — "+obra.nome;
+  document.getElementById("evSubtitle").textContent=`${chave} · ${obra.tipo||"—"} · ${obra.cidade||"—"}/${obra.uf||"—"}`;
+
+  const saved = evStore[obraId];
+  // Áreas: usa salvo, senão o da obra
+  document.getElementById("areaEquivalente").value = saved ? (saved.areaEq||0) : (obra.areaEquivalente||0);
+  document.getElementById("areaConstruida").value  = saved ? (saved.areaConst||0) : (obra.areaConstruida||0);
+
+  // Custos: restaura valores salvos ou zera
+  const obraInputs = document.querySelectorAll("#obraCosts input");
+  const otherInputs = document.querySelectorAll("#otherCosts input");
+  obraInputs.forEach((inp,i)=> inp.value = saved && saved.obra ? (saved.obra[i]||0) : 0);
+  otherInputs.forEach((inp,i)=> inp.value = saved && saved.outros ? (saved.outros[i]||0) : 0);
+
+  calculateEV();
+  document.getElementById("evOverlay").classList.add("open");
+}
+
+function salvarEV(){
+  if(!_evObraAtual){ closeDrawer("evOverlay"); return; }
+  const obraVals  = [...document.querySelectorAll("#obraCosts input")].map(i=>Number(i.value||0));
+  const otherVals = [...document.querySelectorAll("#otherCosts input")].map(i=>Number(i.value||0));
+  const areaEq    = Number(document.getElementById("areaEquivalente").value||0);
+  const areaConst = Number(document.getElementById("areaConstruida").value||0);
+  const valorTotal = obraVals.reduce((a,b)=>a+b,0) + otherVals.reduce((a,b)=>a+b,0);
+  const custoM2 = areaEq>0 ? valorTotal/areaEq : 0;
+
+  evStore[_evObraAtual] = {
+    obra: obraVals, outros: otherVals,
+    areaEq, areaConst, valorTotal, custoM2
+  };
+  // Reflete áreas de volta na obra
+  const obra = obras.find(o=>o.id===_evObraAtual);
+  if(obra){ obra.areaEquivalente=areaEq; obra.areaConstruida=areaConst; }
+
+  dbSave('ev_store', evToDb(_evObraAtual, evStore[_evObraAtual]));
+  closeDrawer("evOverlay");
+  renderObras();
+  renderKanban();
+}
+
+function salvarEVrascunho(){
+  // Mesma persistência, mas mantém o drawer aberto
+  if(!_evObraAtual) return;
+  const obraVals  = [...document.querySelectorAll("#obraCosts input")].map(i=>Number(i.value||0));
+  const otherVals = [...document.querySelectorAll("#otherCosts input")].map(i=>Number(i.value||0));
+  const areaEq    = Number(document.getElementById("areaEquivalente").value||0);
+  const areaConst = Number(document.getElementById("areaConstruida").value||0);
+  const valorTotal = obraVals.reduce((a,b)=>a+b,0) + otherVals.reduce((a,b)=>a+b,0);
+  const custoM2 = areaEq>0 ? valorTotal/areaEq : 0;
+  evStore[_evObraAtual] = { obra:obraVals, outros:otherVals, areaEq, areaConst, valorTotal, custoM2 };
+  const obra = obras.find(o=>o.id===_evObraAtual);
+  if(obra){ obra.areaEquivalente=areaEq; obra.areaConstruida=areaConst; }
+  // feedback simples
+  const btn = event && event.target;
+  if(btn){ const t=btn.textContent; btn.textContent='✓ Salvo'; setTimeout(()=>btn.textContent=t,1200); }
+}
+
+// Retorna {valorTotal, custoM2} do EV de uma obra (pela demanda)
+function getEVdaObraPorDemanda(codigo){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return null;
+  const obra = obras.find(o=>o.nome===d.obra);
+  if(!obra) return null;
+  return evStore[obra.id] || null;
+}
+
+/* EVENTS & INIT */
+document.getElementById("obraSearch").addEventListener("input",renderObras);
+document.getElementById("ufFilter").addEventListener("change",renderObras);
+document.getElementById("tipoFilter").addEventListener("change",renderObras);
+document.getElementById("regiaoFilter").addEventListener("change",renderObras);
+document.getElementById("sprintFilter").addEventListener("change",()=>{renderKanban();if(_viewMode==="lista")renderLista();});
+document.getElementById("analistaFilter").addEventListener("change",()=>{renderKanban();});
+document.getElementById("tipoAtividadeFilter").addEventListener("change",()=>{renderKanban();});
+["evOverlay","novaObraOverlay","demandaOverlay","eiOverlay"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{if(e.target.id===id)closeDrawer(id)}));
+["newTipoUnidade","newUF","newClassificacao","newTipologia"].forEach(id=>document.getElementById(id).addEventListener("change",updateKeyPreview));
+
+
+// Kanban horizontal drag
+(function(){
+  const k = document.getElementById('kanban');
+  if(!k) return;
+  let down=false, sx=0, sl=0;
+  k.addEventListener('mousedown',e=>{
+    if(e.target.closest('.task,.proj-head,.proj-check,.proj-caret-btn,.move-select,.btn,.anal-chip')) return;
+    down=true; sx=e.pageX; sl=k.scrollLeft; k.classList.add('dragging');
+  });
+  document.addEventListener('mouseup',()=>{ down=false; k.classList.remove('dragging'); });
+  k.addEventListener('mousemove',e=>{ if(!down) return; e.preventDefault(); k.scrollLeft=sl-(e.pageX-sx); });
+  // Touch
+  let tx=0,tl=0;
+  k.addEventListener('touchstart',e=>{ tx=e.touches[0].pageX; tl=k.scrollLeft; },{passive:true});
+  k.addEventListener('touchmove',e=>{ k.scrollLeft=tl-(e.touches[0].pageX-tx); },{passive:true});
+})();
+
+// ── INICIALIZAÇÃO ──
+if(_sb){
+  initDB(); // Carrega dados do Supabase
+} else {
+  obras = [...obrasBase]; // Modo offline com dados de demonstração
+  renderAll();
+}
+</script>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay" style="position:fixed;inset:0;background:rgba(7,17,32,.90);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px);transition:opacity .3s">
+  <div style="text-align:center;color:#fff">
+    <div style="font-size:48px;margin-bottom:16px;animation:spin 1s linear infinite">⚙️</div>
+    <div style="font-size:20px;font-weight:700;margin-bottom:8px">SLT — Sala Técnica</div>
+    <div id="loadingMsg" style="font-size:14px;opacity:.75">Conectando ao banco de dados…</div>
+  </div>
+</div>
+<style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+
+</body>
+</html>
