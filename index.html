@@ -210,6 +210,34 @@
 
     /* ═══ SECTION BLOCK ═══ */
     .sblock{background:var(--sf2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
+
+    /* ── LOGIN ── */
+    .login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#040E1F 0%,#091A35 60%,#0D2144 100%);display:flex;align-items:center;justify-content:center;z-index:9998}
+    .login-card{width:100%;max-width:400px;padding:40px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:24px;backdrop-filter:blur(20px);box-shadow:0 32px 80px rgba(0,0,0,.5)}
+    .login-logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#fff 0%,#ddeeff 100%);color:#004B93;display:grid;place-items:center;font-weight:900;font-size:18px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .login-title{font-size:22px;font-weight:800;color:#fff;text-align:center;margin-bottom:4px}
+    .login-sub{font-size:13px;color:rgba(255,255,255,.5);text-align:center;margin-bottom:28px}
+    .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+    .login-field label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.55)}
+    .login-field input{border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.08);padding:12px 14px;font-family:inherit;font-size:14px;color:#fff;transition:all .15s;width:100%}
+    .login-field input::placeholder{color:rgba(255,255,255,.28)}
+    .login-field input:focus{outline:none;border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.12)}
+    .login-error{background:rgba(229,72,63,.15);border:1px solid rgba(229,72,63,.4);border-radius:10px;padding:10px 13px;font-size:13px;color:#FFB3AF;margin-bottom:14px;display:none;text-align:center}
+    .login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#FF6B00 0%,#F58220 100%);border:none;border-radius:12px;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;margin-top:6px}
+    .login-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,107,0,.4)}
+    .login-btn:disabled{opacity:.55;cursor:not-allowed}
+    /* Sidebar user info */
+    .sidebar-user{padding:11px 13px;border-radius:13px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13)}
+    .sidebar-user-nome{font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sidebar-user-nivel{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+    .btn-logout{appearance:none;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.6);padding:6px 12px;border-radius:9px;font-family:inherit;font-size:11.5px;cursor:pointer;width:100%;margin-top:8px;transition:all .13s;font-weight:600}
+    .btn-logout:hover{background:rgba(229,72,63,.18);border-color:rgba(229,72,63,.4);color:#FFB3AF}
+    /* Nivel badge */
+    .nivel-badge{display:inline-flex;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}
+    .nivel-badge.Administrador{background:rgba(255,107,0,.15);color:#FF6B00}
+    .nivel-badge.Gestão{background:rgba(122,90,248,.15);color:#7A5AF8}
+    .nivel-badge.Analista{background:rgba(0,80,200,.12);color:#0050C8}
+
     /* ── FORM SECTIONS (estilo cadastro) ── */
     .fsec{margin-bottom:18px}
     .fsec:last-child{margin-bottom:0}
@@ -391,7 +419,7 @@
         <div class="topbar-actions">
           <span class="pill" id="activeSprintChip">Sprint 11</span>
           <button class="btn btn-ghost">Exportar</button>
-          <button class="btn btn-primary" onclick="openNovaDemanda()">+ Nova demanda</button>
+          <button class="btn btn-primary btn-nova-demanda" onclick="openNovaDemanda()">+ Nova demanda</button>
         </div>
       </div>
       <div class="kpi-grid kpi-grid-7">
@@ -757,6 +785,8 @@
 
       <!-- Ações Etapa 2 -->
       <div style="display:flex;gap:8px;justify-content:flex-end;padding-top:4px">
+        <button class="btn btn-danger" id="btnExcluirDemanda" style="display:none;margin-right:auto"
+          onclick="excluirDemanda(_eiCodigo)">🗑 Excluir demanda</button>
         <button class="btn btn-ghost" onclick="closeDrawer('eiOverlay')">Fechar</button>
         <button class="btn btn-primary" onclick="salvarEI()">Salvar</button>
       </div>
@@ -1019,6 +1049,8 @@ async function initDB(){
   }
   showLoading(false);
   renderAll();
+  aplicarPermissoes();
+  if(pode(['Administrador'])) renderUsuarios();
 }
 
 function renderAll(){
@@ -1028,6 +1060,7 @@ function renderAll(){
     .forEach(el=>el.addEventListener('input',calculateEV));
   renderObras(); renderKanban(); renderSprints(); renderConfigLists(); renderLegenda();
   if(typeof renderSprintTabs==='function') renderSprintTabs();
+  aplicarPermissoes();
 }
 
 /* ══════════════════════════════════
@@ -1299,6 +1332,8 @@ function openEIForm(codigo){
   mostrarEtapa(2);
   // Esconde botão "Voltar" (não há etapa 1 em modo edição)
   document.getElementById('eiResumoTopo').style.display = 'none';
+  const bex2=document.getElementById('btnExcluirDemanda');
+  if(bex2) bex2.style.display=pode(['Administrador','Gestão'])?'block':'none';
 
   // Header
   const obra = obras.find(o=>o.nome===d.obra);
@@ -1649,6 +1684,145 @@ function selecionarAnalista(nome){
   const current = document.getElementById('ei_analista').value;
   const novo = current===nome ? '' : nome; // toggle
   renderAnalistaChips(novo);
+}
+
+
+/* ══ AUTH ══ */
+let _currentUser = null; // {id, email, nome, nivel}
+
+function pode(niveis){ return _currentUser && niveis.includes(_currentUser.nivel); }
+
+function showLogin(){ document.getElementById('loginOverlay').style.display='flex'; }
+function hideLogin(){ document.getElementById('loginOverlay').style.display='none'; }
+function showLoginError(msg){
+  const el=document.getElementById('loginError');
+  el.textContent=msg; el.style.display='block';
+}
+function setLoginLoading(on){
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=on; btn.textContent=on?'Entrando…':'Entrar';
+}
+
+async function login(){
+  if(!_sb){ alert('Configure o Supabase antes de fazer login.'); return; }
+  const email=document.getElementById('loginEmail').value.trim();
+  const senha=document.getElementById('loginSenha').value;
+  document.getElementById('loginError').style.display='none';
+  if(!email||!senha){ showLoginError('Preencha e-mail e senha.'); return; }
+  setLoginLoading(true);
+  const {data,error}=await _sb.auth.signInWithPassword({email,password:senha});
+  if(error){ setLoginLoading(false); showLoginError('E-mail ou senha incorretos.'); return; }
+  const {data:ud,error:ue}=await _sb.from('usuarios').select('*').eq('id',data.user.id).single();
+  if(ue||!ud){ await _sb.auth.signOut(); setLoginLoading(false); showLoginError('Usuário não autorizado. Fale com o administrador.'); return; }
+  if(!ud.ativo){ await _sb.auth.signOut(); setLoginLoading(false); showLoginError('Usuário desativado. Fale com o administrador.'); return; }
+  _currentUser={id:data.user.id,email:ud.email,nome:ud.nome,nivel:ud.nivel};
+  hideLogin();
+  setLoginLoading(false);
+  await initDB();
+}
+
+async function logout(){
+  if(!confirm('Deseja sair?')) return;
+  if(_sb) await _sb.auth.signOut();
+  _currentUser=null;
+  document.getElementById('sidebarUser').style.display='none';
+  showLogin();
+}
+
+async function checkSession(){
+  if(!_sb){ renderAll(); return; }
+  showLoading(true,'Verificando sessão…');
+  const {data:{session}}=await _sb.auth.getSession();
+  if(session){
+    const {data:ud}=await _sb.from('usuarios').select('*').eq('id',session.user.id).single();
+    if(ud&&ud.ativo){
+      _currentUser={id:session.user.id,email:ud.email,nome:ud.nome,nivel:ud.nivel};
+      showLoading(false);
+      await initDB();
+      return;
+    }
+  }
+  showLoading(false);
+  showLogin();
+  setTimeout(()=>document.getElementById('loginEmail').focus(),100);
+}
+
+function aplicarPermissoes(){
+  if(!_currentUser) return;
+  const {nome,nivel}=_currentUser;
+  // Sidebar user
+  document.getElementById('sidebarUser').style.display='block';
+  document.getElementById('sideUserNome').textContent=nome;
+  document.getElementById('sideUserNivel').innerHTML=`<span class="nivel-badge ${nivel}">${nivel}</span>`;
+  // Nova demanda (Admin + Gestão)
+  const podeAgir = pode(['Administrador','Gestão']);
+  document.querySelectorAll('.btn-nova-demanda').forEach(el=>el.style.display=podeAgir?'':'none');
+  // Configurações nav (Admin + Gestão)
+  const navCfg=document.querySelector('[data-view="configuracoes"]');
+  if(navCfg) navCfg.style.display=pode(['Administrador','Gestão'])?'':'none';
+  // Painel usuários (só Admin)
+  const pu=document.getElementById('panelUsuarios');
+  if(pu) pu.style.display=pode(['Administrador'])?'block':'none';
+  // Botão excluir demanda (Admin + Gestão)
+  const bex=document.getElementById('btnExcluirDemanda');
+  if(bex) bex.style.display=podeAgir?'block':'none';
+  // Move select (Admin + Gestão)
+  document.querySelectorAll('.move-select').forEach(el=>el.style.display=podeAgir?'':'none');
+}
+
+/* ══ EXCLUIR DEMANDA ══ */
+async function excluirDemanda(codigo){
+  if(!pode(['Administrador','Gestão'])){ alert('Sem permissão.'); return; }
+  if(!confirm('Excluir esta demanda permanentemente?\n\nEsta ação não pode ser desfeita.')) return;
+  // Remove local
+  demandas=demandas.filter(d=>d.codigo!==codigo);
+  if(formData[codigo]) delete formData[codigo];
+  // Remove do Supabase
+  dbDelete('form_data_ei','demanda_codigo',codigo);
+  dbDelete('demandas','codigo',codigo);
+  closeDrawer('eiOverlay');
+  renderKanban();
+}
+
+/* ══ USUÁRIOS (Admin) ══ */
+async function renderUsuarios(){
+  if(!pode(['Administrador'])) return;
+  const {data}=await _sb.from('usuarios').select('*').order('nome');
+  if(!data) return;
+  document.getElementById('usuariosTable').innerHTML=data.map(u=>`
+    <tr>
+      <td style="font-weight:600">${u.nome}</td>
+      <td style="font-size:12px;color:var(--muted)">${u.email}</td>
+      <td><span class="nivel-badge ${u.nivel}">${u.nivel}</span></td>
+      <td>
+        <button class="link-btn" onclick="toggleUsuario('${u.id}',${!u.ativo})">
+          ${u.ativo?'Desativar':'Ativar'}
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+async function criarUsuario(){
+  if(!pode(['Administrador'])){ alert('Sem permissão.'); return; }
+  const nome=document.getElementById('nouNome').value.trim();
+  const email=document.getElementById('nouEmail').value.trim();
+  const senha=document.getElementById('nouSenha').value;
+  const nivel=document.getElementById('nouNivel').value;
+  if(!nome||!email||!senha){ alert('Preencha todos os campos.'); return; }
+  if(senha.length<6){ alert('A senha deve ter pelo menos 6 caracteres.'); return; }
+  showLoading(true,'Criando usuário…');
+  const {data,error}=await _sb.auth.signUp({email,password:senha});
+  if(error){ showLoading(false); alert('Erro: '+error.message); return; }
+  await _sb.from('usuarios').insert({id:data.user.id,email,nome,nivel,ativo:true});
+  showLoading(false);
+  alert(`✅ Usuário "${nome}" criado com sucesso!\n\nNível: ${nivel}\nE-mail: ${email}`);
+  ['nouNome','nouEmail','nouSenha'].forEach(id=>document.getElementById(id).value='');
+  renderUsuarios();
+}
+
+async function toggleUsuario(id, ativar){
+  await _sb.from('usuarios').update({ativo:ativar}).eq('id',id);
+  renderUsuarios();
 }
 
 /* REGRAS DE TRANSIÇÃO */
@@ -2218,12 +2392,34 @@ document.getElementById("tipoAtividadeFilter").addEventListener("change",()=>{re
 
 // ── INICIALIZAÇÃO ──
 if(_sb){
-  initDB(); // Carrega dados do Supabase
+  checkSession(); // Verifica sessão → login ou initDB
 } else {
-  obras = [...obrasBase]; // Modo offline com dados de demonstração
+  // Modo offline (sem Supabase configurado)
+  obras = [...obrasBase];
   renderAll();
 }
 </script>
+
+<!-- Login overlay -->
+<div id="loginOverlay" class="login-overlay" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">SLT</div>
+    <div class="login-title">Sala Técnica</div>
+    <div class="login-sub">Controle de Orçamentos · Hapvida NotalyDia</div>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-field">
+      <label>E-mail</label>
+      <input id="loginEmail" type="email" placeholder="seu@email.com"
+        onkeydown="if(event.key==='Enter')document.getElementById('loginSenha').focus()">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input id="loginSenha" type="password" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="login()">Entrar</button>
+  </div>
+</div>
 
 <!-- Loading overlay -->
 <div id="loadingOverlay" style="position:fixed;inset:0;background:rgba(7,17,32,.90);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:9999;backdrop-filter:blur(8px);transition:opacity .3s">
