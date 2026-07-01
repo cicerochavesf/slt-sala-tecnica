@@ -427,7 +427,7 @@
       <div class="nav-label">Gestão</div>
       <div class="nav-list">
         <button class="nav-item nav-btn" data-view="obras"><span class="nav-icon">🏗️</span> Obras</button>
-        <button class="nav-item" onclick="alert('📊 Módulo EVs\n\nEste módulo está em desenvolvimento.\nEm breve você poderá acessar todos os Estudos de Viabilidade de forma centralizada.')"><span class="nav-icon">📊</span> EVs</button>
+        <button class="nav-item nav-btn" data-view="evs"><span class="nav-icon">📊</span> EVs</button>
       </div>
     </div>
     <div class="nav-section">
@@ -435,6 +435,11 @@
       <div class="nav-list">
         <button class="nav-item nav-btn" data-view="configuracoes"><span class="nav-icon">⚙️</span> Configurações</button>
       </div>
+    </div>
+    <div class="sidebar-user" id="sidebarUser" style="display:none">
+      <div class="sidebar-user-nome" id="sideUserNome">—</div>
+      <div class="sidebar-user-nivel" id="sideUserNivel">—</div>
+      <button class="btn-logout" onclick="logout()">Sair →</button>
     </div>
     <div class="sidebar-footer">
       <div class="footer-txt"><strong id="sideObrasCount">0</strong> obras · EV único por obra<br>Chave estruturada por atributos</div>
@@ -539,6 +544,31 @@
     </section>
 
     <!-- GERENCIAL -->
+    <section id="view-evs" class="view">
+      <div class="topbar">
+        <div class="page-heading"><h2>Gestão de EVs</h2><p>Busque uma obra para ver todo o histórico de versões do Estudo de Viabilidade.</p></div>
+      </div>
+      <div class="panel">
+        <div class="toolbar">
+          <input class="search-input" id="evObraSearch" type="text" placeholder="Buscar obra por nome, chave ou cidade…" oninput="buscarObraEVs()" />
+        </div>
+        <div id="evObraResultados" style="margin-top:10px"></div>
+      </div>
+
+      <div class="panel" id="evVersoesPanel" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title" id="evVersoesTitulo">—</div>
+          <span class="pill neutral" id="evVersoesCount">0 versões</span>
+        </div>
+        <div class="table-scroll" style="max-height:420px">
+          <table>
+            <thead><tr><th>Versão</th><th>Data</th><th>Gerada por</th><th>Valor total</th><th>Custo/m²</th></tr></thead>
+            <tbody id="evVersoesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section id="view-gerencial" class="view">
       <div class="topbar"><div class="page-heading"><h2>Visão Gerencial</h2><p>Produção, prazos e gargalos por analista e sprint.</p></div></div>
       <div class="panel"><div class="coming"><div class="coming-icon">📊</div><h3>Em desenvolvimento</h3><p>Será construída após a base operacional e de obras estar estável.</p></div></div>
@@ -553,6 +583,41 @@
     <!-- CONFIGURAÇÕES -->
     <section id="view-configuracoes" class="view">
       <div class="topbar"><div class="page-heading"><h2>Configurações</h2><p>Legenda da chave, sprints e listas de apoio do sistema.</p></div></div>
+
+      <!-- USUÁRIOS (só Admin) -->
+      <div class="panel" id="panelUsuarios" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">👥 Usuários</div>
+          <span class="pill neutral">Somente Administrador</span>
+        </div>
+        <div class="table-scroll" style="max-height:260px;margin-bottom:18px">
+          <table>
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Nível</th><th>Ações</th></tr></thead>
+            <tbody id="usuariosTable"></tbody>
+          </table>
+        </div>
+        <div class="fsec">
+          <div class="fsec-head"><span class="fsec-ico">➕</span><span class="fsec-title">Criar novo usuário</span></div>
+          <div class="fgrid2" style="margin-bottom:10px">
+            <div class="ffield"><label>Nome completo</label><input id="nouNome" placeholder="Ex.: João Silva"></div>
+            <div class="ffield"><label>E-mail</label><input id="nouEmail" type="email" placeholder="joao@hapvida.com.br"></div>
+          </div>
+          <div class="fgrid2" style="margin-bottom:12px">
+            <div class="ffield"><label>Senha temporária</label><input id="nouSenha" type="password" placeholder="Mínimo 6 caracteres"></div>
+            <div class="ffield"><label>Nível de acesso</label>
+              <select id="nouNivel">
+                <option value="Analista">Analista</option>
+                <option value="Gestão">Gestão</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="criarUsuario()">Criar usuário</button>
+          <p style="font-size:11.5px;color:var(--muted);margin-top:10px">
+            💡 O usuário poderá entrar imediatamente com o e-mail e a senha cadastrados aqui.
+          </p>
+        </div>
+      </div>
 
       <!-- LEGENDA DA CHAVE -->
       <div class="panel">
@@ -576,7 +641,7 @@
           <div class="field"><label>Nome da sprint</label><input id="newSprintName" placeholder="Ex.: Sprint 13"></div>
           <div class="field"><label>Data início</label><input id="newSprintStart" type="date"></div>
           <div class="field"><label>Data fim</label><input id="newSprintEnd" type="date"></div>
-          <div class="field"><label>Status</label><select id="newSprintStatus"><option>Planejada</option><option>Ativa</option><option>Encerrada</option></select></div>
+          <div class="field"><label>Status</label><input type="text" value="Calculado automaticamente pela data" disabled style="color:var(--muted);font-size:12.5px"></div>
         </div>
         <div style="margin-top:11px"><button class="btn btn-primary" onclick="addSprint()">Criar sprint</button></div>
         <div class="table-wrap" style="margin-top:13px">
@@ -1057,6 +1122,8 @@ async function initDB(){
     const {data:evData}=await _sb.from('ev_store').select('*');
     if(evData) evData.forEach(r=>{ evStore[r.obra_id]={obra:r.obra_vals||[],outros:r.outros_vals||[],
       areaEq:r.area_eq,areaConst:r.area_const,valorTotal:r.valor_total,custoM2:r.custo_m2}; });
+    const {data:evVerData}=await _sb.from('ev_versions').select('*').order('versao');
+    if(evVerData) evVersions = evVerData.map(evVersionFromDb);
     const {data:fdData}=await _sb.from('form_data_ei').select('*');
     if(fdData) fdData.forEach(r=>{ formData[r.demanda_codigo]={ei:{
       descricao:r.descricao||'', analista:r.analista||'', prioridade:r.prioridade||'Média',
@@ -1481,7 +1548,50 @@ function processarConclusao(codigo){
     d.pendenciaDesc = '';
   }
   dbSave('demandas', demandaToDb(d));
+
+  // 3. Cria uma nova versão do EV da obra (premissa: toda conclusão gera versão)
+  criarVersaoEV(codigo);
+
   return true;
+}
+
+/* ══ VERSIONAMENTO DE EV ══ */
+let evVersions = []; // {obraId, versao, data, demandaCodigo, valorTotal, custoM2, areaEq, areaConst, obraVals, outrosVals}
+
+function evVersionToDb(v){
+  return {obra_id:v.obraId, versao:v.versao, data:v.data, demanda_codigo:v.demandaCodigo,
+    valor_total:v.valorTotal, custo_m2:v.custoM2, area_eq:v.areaEq, area_const:v.areaConst,
+    obra_vals:v.obraVals||[], outros_vals:v.outrosVals||[]};
+}
+function evVersionFromDb(r){
+  return {obraId:r.obra_id, versao:r.versao, data:r.data, demandaCodigo:r.demanda_codigo,
+    valorTotal:r.valor_total, custoM2:r.custo_m2, areaEq:r.area_eq, areaConst:r.area_const,
+    obraVals:r.obra_vals||[], outrosVals:r.outros_vals||[]};
+}
+
+function criarVersaoEV(codigo){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return;
+  const obra = obras.find(o=>o.nome===d.obra);
+  if(!obra) return;
+  const ev = evStore[obra.id];
+  if(!ev) return; // sem EV preenchido, não há o que versionar (não deveria ocorrer pois é bloqueado antes)
+
+  const versaoNum = evVersions.filter(v=>v.obraId===obra.id).length + 1;
+  const novaVersao = {
+    obraId: obra.id,
+    versao: versaoNum,
+    data: new Date().toISOString().slice(0,10),
+    demandaCodigo: codigo,
+    valorTotal: ev.valorTotal||0,
+    custoM2: ev.custoM2||0,
+    areaEq: ev.areaEq||0,
+    areaConst: ev.areaConst||0,
+    obraVals: ev.obra||[],
+    outrosVals: ev.outros||[]
+  };
+  evVersions.push(novaVersao);
+  dbSave('ev_versions', evVersionToDb(novaVersao));
 }
 
 function moverDemandaEI(codigo, novoStatus){
@@ -2220,11 +2330,33 @@ function renderObras(){
 }
 
 /* SPRINTS */
+
+/* ══ AUTOMAÇÃO DE SPRINT POR DATA ══ */
+function calcularStatusSprint(s){
+  if(!s.inicio || !s.fim) return s.status || 'Planejada';
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const ini = new Date(s.inicio+'T00:00:00');
+  const fim = new Date(s.fim+'T00:00:00');
+  if(hoje < ini) return 'Planejada';
+  if(hoje > fim) return 'Encerrada';
+  return 'Ativa';
+}
+
+function autoAtualizarSprints(){
+  let mudou = false;
+  sprints.forEach(s=>{
+    const novo = calcularStatusSprint(s);
+    if(novo !== s.status){ s.status = novo; dbSave('sprints', sprintToDb(s)); mudou = true; }
+  });
+  return mudou;
+}
+
 function renderSprints(){
+  autoAtualizarSprints();
   document.getElementById("sprintsTable").innerHTML=sprints.map((s,i)=>{
     const bc=s.status==="Ativa"?"badge-green":s.status==="Encerrada"?"badge-neutral":"badge-blue";
     return`<tr><td><strong>${s.nome}</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px">${s.inicio||"—"}</td><td style="font-family:'DM Mono',monospace;font-size:12px">${s.fim||"—"}</td><td><span class="badge ${bc}">${s.status}</span></td>
-    <td style="display:flex;gap:6px"><button class="action-btn" onclick="setActiveSprint(${i})">Ativar</button><button class="action-btn" style="color:var(--red)" onclick="deleteSprint(${i})">Excluir</button></td></tr>`;
+    <td><button class="action-btn" style="color:var(--red)" onclick="deleteSprint(${i})">Excluir</button></td></tr>`;
   }).join("");
   renderSprintSelects();renderKanban();
 }
@@ -2232,15 +2364,15 @@ function addSprint(){
   const nome=document.getElementById("newSprintName").value.trim();
   const inicio=document.getElementById("newSprintStart").value;
   const fim=document.getElementById("newSprintEnd").value;
-  const status=document.getElementById("newSprintStatus").value;
   if(!nome||!inicio||!fim){alert("Preencha nome, data início e data fim.");return}
   if(sprints.some(s=>s.nome.toLowerCase()===nome.toLowerCase())){alert("Sprint com esse nome já existe.");return}
-  if(status==="Ativa")sprints.forEach(s=>{if(s.status==="Ativa")s.status="Planejada"});
-  sprints.push({nome,inicio,fim,status});
+  const novaSprint={nome,inicio,fim,status:'Planejada'};
+  novaSprint.status = calcularStatusSprint(novaSprint);
+  sprints.push(novaSprint);
+  dbSave('sprints', sprintToDb(novaSprint));
   document.getElementById("newSprintName").value="";document.getElementById("newSprintStart").value="";document.getElementById("newSprintEnd").value="";
   renderSprints();
 }
-function setActiveSprint(i){sprints.forEach((s,j)=>{s.status=j===i?"Ativa":(s.status==="Ativa"?"Planejada":s.status);dbSave('sprints',sprintToDb(s));});renderSprints();}
 function deleteSprint(i){if(!confirm("Excluir esta sprint?"))return;const nome=sprints[i].nome;sprints.splice(i,1);dbDelete('sprints','nome',nome);renderSprints();}
 
 /* CONFIG LISTS */
@@ -2306,6 +2438,62 @@ const obraCostFields=["Fundações","Contenções","Estruturas","Adequações Ci
 const otherCostFields=["Projetos Técnicos","Projetos Legalização","Dados e Voz/Segurança Patrimonial/Chamada Hospitalar","Equipamentos de Climatização","Artefatos em Inox","Marcenaria","Réguas Medicinais","Gerador/Subestação/Transformador/Cubículos","Elevadores/Plataforma Elevatória","Compressor/Bomba de Vácuo/Driox","IT Médico/Nobreak","ETE/ETA","Correio Pneumático","Controle de Acessos","Planejamento de Obras","Contas de Consumo","Comunicação Visual Externa e Interna","Quadros Elétricos","SIC's","Sistemas de Automação","Taxa de Risco (5%)","Blindagem","Paisagismo e/ou Compensação Ambiental","Câmara Fria"];
 function buildCostFields(cId,fields){const c=document.getElementById(cId);c.innerHTML="";fields.forEach(label=>{const r=document.createElement("div");r.className="cost-row";r.innerHTML=`<div class="cost-label">${label}</div><input type="number" min="0" step="0.01" value="0" />`;c.appendChild(r)})}
 function moneyBR(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+
+/* ══ GESTÃO DE EVs — busca por obra, lista de versões ══ */
+function buscarObraEVs(){
+  const q = document.getElementById('evObraSearch').value.toLowerCase().trim();
+  const resultsEl = document.getElementById('evObraResultados');
+  document.getElementById('evVersoesPanel').style.display = 'none';
+  if(!q){ resultsEl.innerHTML=''; return; }
+  const matches = obras.filter(o=>{
+    const chave = gerarChave(o);
+    return [o.nome,o.cidade,o.uf,o.tipo,chave].join(' ').toLowerCase().includes(q);
+  }).slice(0,10);
+  if(matches.length===0){
+    resultsEl.innerHTML = '<div class="empty-state" style="padding:16px">Nenhuma obra encontrada.</div>';
+    return;
+  }
+  resultsEl.innerHTML = matches.map(o=>{
+    const chave = gerarChave(o);
+    const nVersoes = evVersions.filter(v=>v.obraId===o.id).length;
+    return `<div class="obra-item" onclick="verVersoesEV('${o.id}')" style="cursor:pointer">
+      <div class="obra-item-nome">${o.nome}</div>
+      <div class="obra-item-chave">${chave} · ${o.cidade||'—'}/${o.uf||'—'} · ${nVersoes} ${nVersoes===1?'versão':'versões'}</div>
+    </div>`;
+  }).join('');
+}
+
+function verVersoesEV(obraId){
+  const obra = obras.find(o=>o.id===obraId);
+  if(!obra) return;
+  const versoes = evVersions.filter(v=>v.obraId===obraId).sort((a,b)=>b.versao-a.versao);
+
+  document.getElementById('evVersoesTitulo').textContent = `EV — ${obra.nome}`;
+  document.getElementById('evVersoesCount').textContent = `${versoes.length} ${versoes.length===1?'versão':'versões'}`;
+  document.getElementById('evVersoesPanel').style.display = 'block';
+
+  if(versoes.length===0){
+    document.getElementById('evVersoesTable').innerHTML =
+      '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma versão registrada ainda.<br>As versões são criadas automaticamente quando uma demanda vinculada a esta obra é concluída.</td></tr>';
+    return;
+  }
+  document.getElementById('evVersoesTable').innerHTML = versoes.map(v=>`
+    <tr>
+      <td><span class="badge badge-blue">v${v.versao}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${v.data?new Date(v.data+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</td>
+      <td><button class="link-btn" onclick="abrirDemandaOrigemEV('${v.demandaCodigo}')">${v.demandaCodigo}</button></td>
+      <td style="font-weight:700;color:var(--green)">${moneyBR(v.valorTotal||0)}</td>
+      <td style="font-family:'DM Mono',monospace">${moneyBR(v.custoM2||0)}</td>
+    </tr>`).join('');
+}
+
+function abrirDemandaOrigemEV(codigo){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d){ alert('Esta demanda não está mais disponível (pode ter sido excluída).'); return; }
+  openEIForm(codigo);
+}
+
+
 function sumInputs(sel){let t=0;document.querySelectorAll(sel).forEach(i=>t+=Number(i.value||0));return t}
 function calculateEV(){
   const vo=sumInputs("#obraCosts input"),ou=sumInputs("#otherCosts input"),total=vo+ou;
