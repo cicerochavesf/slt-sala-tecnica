@@ -277,7 +277,7 @@
     .kpi-sprint-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
     .ksc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px 12px;box-shadow:var(--sh-sm);position:relative;overflow:hidden;transition:box-shadow .18s;border-left:4px solid var(--cc,var(--line))}
     .ksc:hover{box-shadow:var(--sh)}
-    .ksc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:6px}
+    .ksc-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:6px;min-height:28px;display:flex;align-items:flex-start}
     .ksc-val{font-size:36px;font-weight:900;letter-spacing:-.06em;color:var(--ink);line-height:1;margin-bottom:5px}
     .ksc-val.text{font-size:18px;font-weight:800;letter-spacing:-.03em;color:var(--green)}
     .ksc-subs{display:flex;flex-direction:column;gap:3px;margin-top:4px}
@@ -396,6 +396,7 @@
       <div class="nav-label">Gestão</div>
       <div class="nav-list">
         <button class="nav-item nav-btn" data-view="obras"><span class="nav-icon">🏗️</span> Obras</button>
+        <button class="nav-item" onclick="alert('📊 Módulo EVs\n\nEste módulo está em desenvolvimento.\nEm breve você poderá acessar todos os Estudos de Viabilidade de forma centralizada.')"><span class="nav-icon">📊</span> EVs</button>
       </div>
     </div>
     <div class="nav-section">
@@ -1011,8 +1012,8 @@ async function initDB(){
   showLoading(true,'Conectando ao banco de dados…');
   try{
     const {data:obrasData, error:e1}=await _sb.from('obras').select('*');
-    if(e1) throw e1;
-    if(obrasData && obrasData.length>0){ obras=obrasData.map(obraFromDb); }
+    if(e1){ console.warn('Erro ao carregar obras:', e1.message); obras=[...obrasBase]; }
+    else if(obrasData && obrasData.length>0){ obras=obrasData.map(obraFromDb); }
     else{
       const seed=confirm('Banco de dados vazio.\nDeseja importar as 125 obras da base Hapvida?');
       if(seed) await seedObras(); else obras=[...obrasBase];
@@ -1033,15 +1034,18 @@ async function initDB(){
       dataValidacaoObras:r.data_validacao_obras||'', dataEntregaReal:r.data_entrega_real||'',
       observacao:r.observacao||'', projetos:r.projetos||{}, projetosCustom:r.projetos_custom||[]
     }}; });
-    const {data:cfgData}=await _sb.from('configuracoes').select('*');
-    if(cfgData && cfgData.length>0){
-      const map={analistas,tiposUnidade,classificacoes,tipologias,tiposAtividade,statusList};
-      cfgData.forEach(r=>{ if(map[r.chave]&&r.valor?.length){ map[r.chave].length=0; map[r.chave].push(...r.valor); } });
-    } else {
-      const cfgs=[['analistas',analistas],['tiposUnidade',tiposUnidade],['classificacoes',classificacoes],
-        ['tipologias',tipologias],['tiposAtividade',tiposAtividade],['statusList',statusList]];
-      await _sb.from('configuracoes').insert(cfgs.map(([k,v])=>({chave:k,valor:v})));
-    }
+    try {
+      const {data:cfgData}=await _sb.from('configuracoes').select('*');
+      if(cfgData && cfgData.length>0){
+        const map={analistas,tiposUnidade,classificacoes,tipologias,tiposAtividade,statusList};
+        cfgData.forEach(r=>{ if(map[r.chave]&&r.valor?.length){ map[r.chave].length=0; map[r.chave].push(...r.valor); } });
+      } else {
+        // Seed configurações com os defaults
+        const cfgs=[['analistas',analistas],['tiposUnidade',tiposUnidade],['classificacoes',classificacoes],
+          ['tipologias',tipologias],['tiposAtividade',tiposAtividade],['statusList',statusList]];
+        await _sb.from('configuracoes').insert(cfgs.map(([k,v])=>({chave:k,valor:v})));
+      }
+    } catch(cfgErr){ console.warn('Configs não carregadas, usando defaults:', cfgErr); }
   }catch(err){
     console.error('initDB erro:', err);
     alert('Erro ao conectar com o Supabase. Verifique as credenciais. Rodando em modo offline.');
@@ -1730,21 +1734,29 @@ async function logout(){
 }
 
 async function checkSession(){
-  if(!_sb){ renderAll(); return; }
+  if(!_sb){ obras=[...obrasBase]; renderAll(); return; }
   showLoading(true,'Verificando sessão…');
-  const {data:{session}}=await _sb.auth.getSession();
-  if(session){
-    const {data:ud}=await _sb.from('usuarios').select('*').eq('id',session.user.id).single();
-    if(ud&&ud.ativo){
-      _currentUser={id:session.user.id,email:ud.email,nome:ud.nome,nivel:ud.nivel};
-      showLoading(false);
-      await initDB();
-      return;
+  try {
+    const {data, error} = await _sb.auth.getSession();
+    const session = data?.session;
+    if(session && !error){
+      const {data:ud, error:ue} = await _sb.from('usuarios').select('*').eq('id',session.user.id).single();
+      if(ud && ud.ativo && !ue){
+        _currentUser = {id:session.user.id, email:ud.email, nome:ud.nome, nivel:ud.nivel};
+        showLoading(false);
+        await initDB();
+        return;
+      }
+      // Sessão sem usuário válido — limpa e mostra login
+      try { await _sb.auth.signOut(); } catch(e){}
     }
+  } catch(err){
+    console.error('Erro ao verificar sessão:', err);
+    try { await _sb.auth.signOut(); } catch(e){}
   }
   showLoading(false);
   showLogin();
-  setTimeout(()=>document.getElementById('loginEmail').focus(),100);
+  setTimeout(()=>{ const el=document.getElementById('loginEmail'); if(el) el.focus(); }, 150);
 }
 
 function aplicarPermissoes(){
