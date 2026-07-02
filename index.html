@@ -208,6 +208,67 @@
     .ev-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue-700);margin-bottom:5px}
     .ev-value{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.03em}
 
+    /* ═══ EV DOCUMENT HEADER ═══ */
+    .ev-doc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 16px;border-bottom:2px solid var(--blue-700)}
+    .ev-doc-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-700);margin-bottom:4px}
+    .ev-doc-obra{font-size:21px;font-weight:800;color:var(--blue-700);letter-spacing:-.02em;line-height:1.2}
+    .ev-doc-brand{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+    .ev-doc-rev{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--blue-700);background:var(--blue-100);padding:4px 11px;border-radius:999px}
+    .ev-doc-date{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted)}
+    .ev-doc-pendbadge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px}
+    .ev-doc-pendbadge.pendente{background:var(--orange-50);color:var(--orange-700);border:1px solid rgba(255,107,0,.28)}
+    .ev-doc-pendbadge.completo{background:#E6F7EE;color:var(--green);border:1px solid rgba(4,120,87,.24)}
+
+    /* ═══ EV AREA BOXES ═══ */
+    .ev-area-boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .ev-area-box{background:var(--blue-700);border-radius:var(--r-lg);padding:12px 16px;color:#fff}
+    .ev-area-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.75);margin-bottom:6px}
+    .ev-area-box input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:9px;padding:8px 10px;color:#fff;font-family:'DM Mono',monospace;font-size:16px;font-weight:700}
+    .ev-area-box input:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.2)}
+    .ev-area-hint{font-size:10.5px;color:rgba(255,255,255,.65);margin-top:5px}
+
+    /* ═══ EV TABLE ═══ */
+    .ev-table-wrap{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+    .ev-table{width:100%;border-collapse:collapse;font-size:12.5px}
+    .ev-table thead th{background:var(--blue-700);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:9px 10px;text-align:left}
+    .ev-col-item{width:42px;text-align:center!important}
+    .ev-col-valor,.ev-col-pct,.ev-col-m2{text-align:right!important;width:110px}
+    .ev-col-status{width:130px}
+    .ev-table tbody td{padding:6px 10px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+    .ev-table tbody tr:hover td{background:var(--sf2)}
+    .ev-row-item{text-align:center;font-family:'DM Mono',monospace;color:var(--muted);font-size:11.5px}
+    .ev-row-desc{font-weight:600;color:var(--ink)}
+    .ev-row-valor input{width:100%;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:'DM Mono',monospace;font-size:12.5px;text-align:right}
+    .ev-row-valor input:focus{outline:none;border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-d)}
+    .ev-row-pct,.ev-row-m2{text-align:right;font-family:'DM Mono',monospace;color:var(--muted);font-size:11.5px;white-space:nowrap}
+    .ev-row-status select{width:100%;border:1px solid var(--line);border-radius:7px;padding:5px 6px;font-size:11.5px;background:var(--surface)}
+    .ev-status-estimado select{color:#B45F00;font-weight:700}
+    .ev-status-orcado select{color:var(--blue-700);font-weight:700}
+    .ev-status-cotado select{color:var(--green);font-weight:700}
+    .ev-status-na select{color:var(--muted)}
+    .ev-row-na{opacity:.55}
+    .ev-row-na .ev-row-desc{text-decoration:line-through;color:var(--muted)}
+    .ev-toggle-na-btn{appearance:none;border:1px solid var(--line);background:var(--sf2);color:var(--blue-700);padding:6px 12px;border-radius:999px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .13s}
+    .ev-toggle-na-btn:hover{background:var(--blue-d);border-color:var(--blue-600)}
+    .hist-item{display:flex;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line-2);font-size:12px}
+    .hist-quando{font-family:'DM Mono',monospace;font-size:10.5px;color:var(--muted);white-space:nowrap;padding-top:1px}
+    .hist-txt{color:var(--ink);line-height:1.4}
+    .task-entrega{margin-top:8px;padding:5px 9px;border-radius:8px;font-size:11px;font-weight:700}
+    .task-entrega.em-dia{background:#E6F7EE;color:var(--green)}
+    .task-entrega.proximo{background:var(--orange-50);color:var(--orange-700)}
+    .task-entrega.atrasada{background:#FDECEA;color:var(--red)}
+    .task-entrega.entregue-prazo{background:#E6F7EE;color:var(--green)}
+    .task-entrega.entregue-atraso{background:var(--orange-50);color:#8A4A00}
+    .task-comp{display:inline-block;background:var(--blue-100);color:var(--blue-900);padding:1px 6px;border-radius:999px;font-size:10px;font-weight:800}
+    .dt-num{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--blue-700);color:#fff;font-size:10px;font-weight:800;margin-right:3px;vertical-align:middle}
+    .nao-enviado-check{display:flex;align-items:center;gap:9px;padding:10px 12px;background:var(--orange-50);border:1px solid rgba(255,107,0,.25);border-radius:var(--r);cursor:pointer;font-size:12.5px;color:#8A4A00}
+    .nao-enviado-check input{width:16px;height:16px;accent-color:var(--orange-700);cursor:pointer}
+    .field input:disabled{background:var(--sf2);color:var(--muted);cursor:not-allowed;opacity:.6}
+    .ev-section-head td{background:var(--sf2);font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--blue-700);padding:8px 10px;border-bottom:1px solid var(--line)}
+    .ev-total-row td{background:var(--blue-d);font-weight:800;color:var(--blue-700);padding:9px 10px;font-size:13px}
+    .ev-total-row-alt td{background:var(--sf2);color:var(--ink);font-weight:700;font-size:12px}
+    .ev-pend-dot{display:inline-block;margin-left:6px;color:var(--orange-700);font-size:13px;cursor:help}
+
     /* ═══ SECTION BLOCK ═══ */
     .sblock{background:var(--sf2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
 
@@ -258,6 +319,8 @@
     .anal-chip{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--slate);cursor:pointer;transition:all .13s;white-space:nowrap}
     .anal-chip:hover{border-color:var(--blue-600);color:var(--blue-700);transform:translateY(-1px)}
     .anal-chip.on{background:var(--blue-700);border-color:var(--blue-700);color:#fff;box-shadow:0 4px 12px rgba(0,75,147,.22)}
+    .anal-chip.lider{background:var(--blue-700);border-color:var(--blue-700);color:#fff;box-shadow:0 4px 12px rgba(0,75,147,.28);font-weight:800}
+    .anal-chip.comp{background:var(--blue-100);border-color:var(--blue-600);color:var(--blue-900);font-weight:700}
     .sblock h4{font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:11px;letter-spacing:-.01em}
     .cost-row{display:grid;grid-template-columns:1.9fr 1fr;gap:7px;align-items:center;margin-bottom:7px}
     .cost-label{font-size:12px;color:var(--text);font-weight:500}
@@ -368,8 +431,85 @@
     ::-webkit-scrollbar-thumb:hover{background:var(--ghost)}
 
     /* ═══ RESPONSIVE ═══ */
+
+    /* ═══════════ MOBILE ═══════════ */
+    .mobile-header{display:none}
+    .mobile-menu-overlay{display:none}
+    .hamburger{appearance:none;border:none;background:transparent;width:42px;height:42px;display:grid;place-items:center;gap:0;cursor:pointer;border-radius:10px}
+    .hamburger span{display:block;width:22px;height:2.5px;background:#fff;border-radius:2px;margin:2.5px 0;transition:.2s}
+    .mh-brand{font-weight:900;font-size:16px;color:#fff;letter-spacing:-.02em}
+    .mh-brand span{font-weight:600;font-size:12px;color:rgba(255,255,255,.7);margin-left:6px}
+    .mh-spacer{width:42px}
+
+    @media(max-width:860px){
+      /* Header fixo com hambúrguer */
+      .mobile-header{display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;height:54px;background:linear-gradient(180deg,#004B93 0%,#003A72 100%);z-index:900;padding:0 10px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+      .mobile-menu-overlay{display:block;position:fixed;inset:0;background:rgba(7,17,32,.55);z-index:940;opacity:0;pointer-events:none;transition:opacity .22s}
+      .mobile-menu-overlay.visible{opacity:1;pointer-events:auto}
+
+      /* Sidebar vira drawer deslizante */
+      .shell{grid-template-columns:1fr}
+      .sidebar{position:fixed;top:0;left:0;bottom:0;width:min(290px,84vw);height:100vh;z-index:950;transform:translateX(-102%);transition:transform .25s ease;box-shadow:8px 0 28px rgba(0,0,0,.3)}
+      .sidebar.mobile-open{transform:translateX(0)}
+
+      /* Conteúdo abaixo do header */
+      .content{padding-top:54px}
+      .view{padding:12px}
+      .topbar{flex-direction:column;align-items:stretch;gap:10px}
+      .topbar-actions{flex-wrap:wrap}
+      .topbar-actions .btn{flex:1;min-width:0;justify-content:center}
+      .page-heading h2{font-size:20px}
+      .page-heading p{font-size:12px}
+
+      /* KPIs em 2 colunas compactas */
+      .kpi-grid,.kpi-grid-7{grid-template-columns:repeat(2,1fr);gap:8px}
+      .kpi-grid-7 .kpi-value{font-size:26px}
+      .kpi-card{padding:10px 12px}
+      .kpi-sprint-grid{grid-template-columns:repeat(2,1fr)}
+
+      /* Kanban: colunas menores com scroll horizontal suave */
+      .kanban{grid-template-columns:repeat(7,240px);gap:10px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:14px}
+      .kanban-col{scroll-snap-align:start}
+
+      /* Filtros empilhados */
+      .filter-bar{flex-direction:column;gap:8px}
+      .filter-bar .field{min-width:100%}
+      .g2,.g3,.g4,.fgrid2,.legend-grid,.ev-area-boxes{grid-template-columns:1fr}
+
+      /* Drawers em tela cheia */
+      .drawer{width:100vw!important;max-width:100vw;height:100vh;border-radius:0}
+      .drawer-body{padding:12px}
+      .ev-doc-head{flex-wrap:wrap;padding:14px 14px 12px}
+      .ev-doc-obra{font-size:17px}
+      .ev-summary{grid-template-columns:repeat(2,1fr)}
+
+      /* Tabela EV com scroll horizontal */
+      .ev-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .ev-table{min-width:640px}
+      .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .table-scroll table{min-width:600px}
+
+      /* Login */
+      .login-card{max-width:100%;margin:0 14px;padding:28px 22px}
+
+      /* Chips de analista quebram linha */
+      .anal-chips-wrap{gap:6px}
+      .anal-chip{padding:8px 12px;font-size:12px}
+
+      /* Toques maiores */
+      .btn{padding:11px 15px}
+      .nav-item{padding:13px 14px}
+      .close-btn{width:44px;height:44px}
+    }
+
+    /* Evitar zoom automático do iOS ao focar inputs */
+    @media(max-width:860px){
+      input,select,textarea{font-size:16px!important}
+      .ev-row-valor input,.ev-row-status select{font-size:13px!important}
+    }
+
     @media(max-width:1150px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.kpi-grid-7{grid-template-columns:repeat(4,1fr)}.ev-summary{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.legend-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:860px){.shell{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.view{padding:14px}.kpi-grid,.kpi-grid-7{grid-template-columns:repeat(2,1fr)}.kpi-grid-7 .kpi-value{font-size:32px}.kanban{grid-template-columns:repeat(7,228px)}.g2,.g3,.g4,.legend-grid{grid-template-columns:1fr}.topbar{flex-direction:column}}
+    /* mobile agora tratado pelo bloco MOBILE acima */
   </style>
 </head>
 <body>
@@ -403,6 +543,16 @@
   </div>
 </div>
 <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+
+<!-- Header mobile (só aparece em telas pequenas) -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="mh-brand">SLT <span>Sala Técnica</span></div>
+  <div class="mh-spacer"></div>
+</div>
+<div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
 
 <div class="shell">
 
@@ -459,6 +609,24 @@
           <button class="btn btn-primary btn-nova-demanda" onclick="openNovaDemanda()">+ Nova demanda</button>
         </div>
       </div>
+      <!-- ITEM 14: filtros ANTES dos KPIs -->
+      <div class="panel" style="margin-bottom:14px;padding:14px 16px">
+        <div class="filter-bar" style="margin-bottom:0">
+          <div class="field"><label>Sprint</label><select id="sprintFilter"></select></div>
+          <div class="field"><label>Analista</label><select id="analistaFilter"></select></div>
+          <div class="field"><label>Tipo de atividade</label><select id="tipoAtividadeFilter"></select></div>
+          <div class="field"><label>Status da entrega</label>
+            <select id="entregaFilter">
+              <option value="">Todos</option>
+              <option value="em-dia">🟢 Em dia</option>
+              <option value="proximo">🟠 Próximo da entrega</option>
+              <option value="atrasada">🔴 Atrasada</option>
+              <option value="entregue-prazo">✓ Entregue no prazo</option>
+              <option value="entregue-atraso">⚠ Entregue fora do prazo</option>
+            </select>
+          </div>
+        </div>
+      </div>
       <div class="kpi-grid kpi-grid-7">
         <div class="kpi-card"><div class="kpi-label">Total na Sprint</div><div class="kpi-value" id="kpiTotal">0</div></div>
         <div class="kpi-card"><div class="kpi-label">A Iniciar</div><div class="kpi-value" id="kpiFazer">0</div></div>
@@ -469,12 +637,7 @@
         <div class="kpi-card"><div class="kpi-label">Cancelado</div><div class="kpi-value" id="kpiCancelado">0</div></div>
       </div>
       <div class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
-          <div class="filter-bar" style="margin-bottom:0;flex:1;min-width:0">
-            <div class="field"><label>Sprint</label><select id="sprintFilter"></select></div>
-            <div class="field"><label>Analista</label><select id="analistaFilter"></select></div>
-            <div class="field"><label>Tipo de atividade</label><select id="tipoAtividadeFilter"></select></div>
-          </div>
+        <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:12px">
           <div class="view-toggle">
             <button class="vt-btn active" id="btnKanban" onclick="setViewMode('kanban')">⬛ Kanban</button>
             <button class="vt-btn" id="btnLista" onclick="setViewMode('lista')">☰ Lista</button>
@@ -546,13 +709,18 @@
     <!-- GERENCIAL -->
     <section id="view-evs" class="view">
       <div class="topbar">
-        <div class="page-heading"><h2>Gestão de EVs</h2><p>Busque uma obra para ver todo o histórico de versões do Estudo de Viabilidade.</p></div>
+        <div class="page-heading"><h2>Gestão de EVs</h2><p>Todas as obras que já possuem Estudo de Viabilidade. Clique numa obra para abrir o EV.</p></div>
       </div>
       <div class="panel">
-        <div class="toolbar">
-          <input class="search-input" id="evObraSearch" type="text" placeholder="Buscar obra por nome, chave ou cidade…" oninput="buscarObraEVs()" />
+        <div class="toolbar" style="margin-bottom:12px">
+          <input class="search-input" id="evObraSearch" type="text" placeholder="Filtrar por nome, chave ou cidade…" oninput="renderListaEVs()" />
         </div>
-        <div id="evObraResultados" style="margin-top:10px"></div>
+        <div class="table-scroll" style="max-height:calc(100vh - 300px)">
+          <table>
+            <thead><tr><th>Obra</th><th>Cidade/UF</th><th>Versão atual</th><th>Última atualização</th><th>Valor total</th><th>Pendência</th><th>Versões</th></tr></thead>
+            <tbody id="evListaBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <div class="panel" id="evVersoesPanel" style="display:none">
@@ -562,7 +730,7 @@
         </div>
         <div class="table-scroll" style="max-height:420px">
           <table>
-            <thead><tr><th>Versão</th><th>Data</th><th>Gerada por</th><th>Valor total</th><th>Custo/m²</th></tr></thead>
+            <thead><tr><th>Versão</th><th>Data</th><th>Gerada por</th><th>Valor total</th><th>Custo/m²</th><th>Pendência</th></tr></thead>
             <tbody id="evVersoesTable"></tbody>
           </table>
         </div>
@@ -748,7 +916,7 @@
           <div class="fsec">
             <div class="fsec-head"><span class="fsec-ico">📝</span><span class="fsec-title">Descrição da demanda</span><span class="fsec-req">*</span></div>
             <div class="ffield">
-              <textarea id="ei_descricao" rows="3" placeholder="Descreva o escopo desta demanda…"></textarea>
+              <textarea id="ei_descricao" rows="3" placeholder="Descreva o escopo desta demanda…" oninput="autosaveEI()"></textarea>
             </div>
           </div>
 
@@ -756,6 +924,7 @@
           <div class="fsec">
             <div class="fsec-head"><span class="fsec-ico">👤</span><span class="fsec-title">Analista responsável</span><span class="fsec-req">*</span></div>
             <div id="ei_analistaChips" class="anal-chips-wrap"></div>
+            <div id="analChipsLegenda" style="font-size:11.5px;color:var(--muted);margin-top:8px">Clique para definir o líder da demanda. Cliques seguintes adicionam analistas complementares.</div>
             <input type="hidden" id="ei_analista">
           </div>
 
@@ -803,55 +972,76 @@
       <div class="sblock">
         <h4>Prioridade</h4>
         <div class="field" style="max-width:240px">
-          <select id="ei_prioridade"><option>Alta</option><option selected>Média</option><option>Baixa</option></select>
+          <select id="ei_prioridade" onchange="autosaveEI()"><option>Alta</option><option selected>Média</option><option>Baixa</option></select>
         </div>
       </div>
 
-      <!-- Datas -->
+      <!-- Datas (ordem 1-7) -->
       <div class="sblock">
-        <h4>Datas</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h4 style="margin:0">Datas</h4>
+          <span id="eiAutosaveIndicator" style="font-size:11px;color:var(--green);opacity:0;transition:opacity .3s;font-weight:700"></span>
+        </div>
         <div class="g2">
-          <div class="field"><label>Data de início</label><input id="ei_dataInicio" type="date"></div>
-          <div class="field"><label>Data prevista de entrega</label><input id="ei_dataPrevista" type="date"></div>
+          <div class="field"><label><span class="dt-num">1</span> Data prevista de início</label><input id="ei_dataPrevInicio" type="date" onchange="registrarMudancaData(this);autosaveEI()"></div>
+          <div class="field"><label><span class="dt-num">2</span> Data de início real</label><input id="ei_dataInicio" type="date" onchange="registrarMudancaData(this);prefillEntrega();autosaveEI()"></div>
         </div>
         <div class="g2" style="margin-top:9px">
           <div class="field">
-            <label>🎯 Meta de envio p/ validação Obras</label>
-            <input id="ei_dataMetaObras" type="date">
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">Recomenda-se ~48h antes da data prevista de entrega.</div>
+            <label><span class="dt-num">3</span> 🎯 Data prevista de envio p/ validação Obras</label>
+            <input id="ei_dataMetaObras" type="date" onchange="registrarMudancaData(this);autosaveEI()">
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Meta exibida no kanban. Pré-preenchida com 48h antes da entrega prevista.</div>
           </div>
-          <div></div>
-        </div>
-        <div class="g2" style="margin-top:9px">
           <div class="field auto-field-wrap">
-            <label><span class="auto-icon">⚡</span> Envio → Validação Obras</label>
+            <label><span class="dt-num">4</span> <span class="auto-icon">⚡</span> Data real de envio p/ validação Obras</label>
             <input id="ei_dataEnvioObras" type="date"
-              onchange="onAutoDate('ei_dataEnvioObras','Aguardando Validação Obras')">
+              onchange="registrarMudancaData(this);onAutoDate('ei_dataEnvioObras','Aguardando Validação Obras');autosaveEI()">
             <div class="auto-hint info" id="ei_hintObras"></div>
           </div>
+        </div>
+        <div class="g2" style="margin-top:9px">
           <div class="field">
-            <label>Data de validação Obras</label>
-            <input id="ei_dataValidacaoObras" type="date">
-            <div style="font-size:11px;color:var(--muted);margin-top:4px">Data em que a equipe de Obras concluiu a validação.</div>
+            <label><span class="dt-num">5</span> Data de validação da equipe de Obras</label>
+            <input id="ei_dataValidacaoObras" type="date" onchange="registrarMudancaData(this);autosaveEI()">
+          </div>
+          <div class="field">
+            <label><span class="dt-num">6</span> Data prevista da entrega da demanda</label>
+            <input id="ei_dataPrevista" type="date" onchange="registrarMudancaData(this);prefillMetaObras();autosaveEI()">
+            <div style="font-size:11px;color:var(--muted);margin-top:4px">Pré-preenchida com 14 dias após o início real.</div>
           </div>
         </div>
         <div class="g2" style="margin-top:9px">
           <div class="field auto-field-wrap">
-            <label><span class="auto-icon">⚡</span> Data de entrega real</label>
+            <label><span class="dt-num">7</span> <span class="auto-icon">⚡</span> Data de entrega real</label>
             <input id="ei_dataEntregaReal" type="date"
-              onchange="onAutoDate('ei_dataEntregaReal','Concluído')">
+              onchange="registrarMudancaData(this);onAutoDate('ei_dataEntregaReal','Concluído');autosaveEI()">
             <div class="auto-hint info" id="ei_hintEntrega"></div>
           </div>
           <div></div>
         </div>
+        <label class="nao-enviado-check" style="margin-top:12px">
+          <input type="checkbox" id="ei_naoEnviadoObras" onchange="toggleNaoEnviadoObras();autosaveEI()">
+          <span>Esta demanda <strong>não foi enviada</strong> para validação da equipe de Obras</span>
+        </label>
       </div>
 
+
+      <!-- ITEM 6+12: Histórico -->
+      <div class="sblock">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h4 style="margin:0">📜 Histórico de alterações</h4>
+          <button class="btn btn-ghost btn-sm" onclick="toggleHistoricoDemanda()">Ver histórico</button>
+        </div>
+        <div id="eiHistoricoSec" style="display:none;margin-top:10px">
+          <div id="eiHistoricoLista" style="max-height:220px;overflow-y:auto"></div>
+        </div>
+      </div>
 
       <!-- Observação -->
       <div class="sblock">
         <h4>Observação</h4>
         <div class="field">
-          <textarea id="ei_observacao" rows="3" placeholder="Registre observações relevantes sobre esta demanda…"></textarea>
+          <textarea id="ei_observacao" rows="3" placeholder="Registre observações relevantes sobre esta demanda…" oninput="autosaveEI()"></textarea>
         </div>
       </div>
 
@@ -859,14 +1049,19 @@
       <div class="sblock">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <h4 style="margin:0">Projetos envolvidos</h4>
-          <button class="btn btn-ghost btn-sm" onclick="recolherTodosProjetos()">Recolher todas</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="recolherTodosProjetos()">Recolher abertas</button>
+            <button class="btn btn-ghost btn-sm" id="btnRecolherGrupo" onclick="toggleGrupoProjetos()">⯅ Recolher grupo</button>
+          </div>
         </div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Marque a caixinha de cada projeto envolvido para preencher suas informações.</p>
-        <div id="eiProjetosLista"></div>
-        <div class="add-row" style="margin-top:12px">
-          <input id="ei_newProjeto" placeholder="Novo código (ex.: FUN, PAI…)"
-            style="text-transform:uppercase;font-family:'DM Mono',monospace">
-          <button class="btn btn-ghost btn-sm" onclick="addProjetoCustom()">Adicionar</button>
+        <div id="eiProjetosGrupo">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Marque a caixinha de cada projeto envolvido para preencher suas informações.</p>
+          <div id="eiProjetosLista"></div>
+          <div class="add-row" style="margin-top:12px">
+            <input id="ei_newProjeto" placeholder="Novo código (ex.: FUN, PAI…)"
+              style="text-transform:uppercase;font-family:'DM Mono',monospace">
+            <button class="btn btn-ghost btn-sm" onclick="addProjetoCustom()">Adicionar</button>
+          </div>
         </div>
       </div>
 
@@ -897,14 +1092,21 @@
 
 <!-- DRAWER: EV -->
 <div class="overlay" id="evOverlay" style="z-index:110">
-  <div class="drawer">
-    <div class="drawer-head">
+  <div class="drawer" style="width:min(1180px,97vw)">
+    <div class="ev-doc-head">
       <div>
-        <div class="drawer-title" id="evTitle">Estudo de Viabilidade</div>
+        <div class="ev-doc-kicker">ESTUDO DE VIABILIDADE</div>
+        <div class="ev-doc-obra" id="evTitle">—</div>
         <div class="drawer-sub" id="evSubtitle">Obra selecionada</div>
+      </div>
+      <div class="ev-doc-brand">
+        <div class="ev-doc-rev" id="evRevBadge">REV00</div>
+        <div class="ev-doc-date" id="evDocDate">—</div>
+        <div class="ev-doc-pendbadge" id="evPendBadge" style="display:none"></div>
       </div>
       <button class="close-btn" onclick="closeDrawer('evOverlay')">✕</button>
     </div>
+
     <div class="drawer-body">
       <div class="ev-summary">
         <div class="ev-card"><div class="ev-label">Valor da Obra</div><div class="ev-value" id="sumValorObra">R$ 0</div></div>
@@ -912,17 +1114,56 @@
         <div class="ev-card"><div class="ev-label">Total do EV</div><div class="ev-value" id="sumEV">R$ 0</div></div>
         <div class="ev-card"><div class="ev-label">Custo por m²</div><div class="ev-value" id="sumM2">R$ 0</div></div>
       </div>
-      <div class="sblock">
-        <h4>Dados gerais</h4>
-        <div class="g2">
-          <div class="field"><label>Área equivalente (m²)</label><input id="areaEquivalente" type="number" min="0" step="0.01" value="0" /></div>
-          <div class="field"><label>Área construída (m²)</label><input id="areaConstruida" type="number" min="0" step="0.01" value="0" /></div>
+
+      <div class="ev-area-boxes">
+        <div class="ev-area-box">
+          <div class="ev-area-label">Área de Construção (m²)</div>
+          <input id="areaConstruida" type="number" min="0" step="0.01" value="0" onpaste="handleMoedaPaste(event)" />
+          <div class="ev-area-hint">Área fornecida pelo Setor de Projetos</div>
+        </div>
+        <div class="ev-area-box">
+          <div class="ev-area-label">Área Equivalente (m²)</div>
+          <input id="areaEquivalente" type="number" min="0" step="0.01" value="0" onpaste="handleMoedaPaste(event)" />
+          <div class="ev-area-hint">Composição de área equivalente</div>
         </div>
       </div>
-      <div class="g2">
-        <div class="sblock"><h4>Custos da Obra</h4><div id="obraCosts"></div></div>
-        <div class="sblock"><h4>Outras Categorias</h4><div id="otherCosts"></div></div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button class="ev-toggle-na-btn" id="evToggleNA" onclick="toggleMostrarNA()" style="display:none">👁 Mostrar itens não aplicáveis</button>
       </div>
+      <div class="ev-table-wrap">
+        <table class="ev-table">
+          <thead>
+            <tr>
+              <th class="ev-col-item">Item</th>
+              <th class="ev-col-desc">Descrição</th>
+              <th class="ev-col-valor">Valor</th>
+              <th class="ev-col-pct">%</th>
+              <th class="ev-col-status">Status</th>
+              <th class="ev-col-m2">R$/m²</th>
+            </tr>
+          </thead>
+          <tbody id="obraCosts"></tbody>
+          <tbody id="otherCosts"></tbody>
+          <tfoot>
+            <tr class="ev-total-row">
+              <td colspan="2">Total Geral</td>
+              <td id="evTotalGeral">R$ 0</td>
+              <td id="evTotalPct">100%</td>
+              <td></td>
+              <td id="evTotalM2">R$ 0</td>
+            </tr>
+            <tr class="ev-total-row ev-total-row-alt">
+              <td colspan="2">Total Geral (Sem Taxa de Risco)</td>
+              <td id="evTotalSemRisco">R$ 0</td>
+              <td id="evTotalSemRiscoPct">—</td>
+              <td></td>
+              <td id="evTotalSemRiscoM2">R$ 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
       <div style="display:flex;gap:8px;padding-top:2px">
         <button class="btn btn-ghost" onclick="salvarEVrascunho()">Salvar rascunho</button>
         <button class="btn btn-primary" onclick="salvarEV()">Salvar EV</button>
@@ -968,6 +1209,19 @@
         <div class="g2" style="margin-top:9px">
           <div class="field"><label>Classificação</label><select id="newClassificacao"></select></div>
           <div class="field"><label>Tipologia</label><select id="newTipologia"></select></div>
+        </div>
+        <div class="g2" style="margin-top:9px">
+          <div class="field"><label>⚡ Precisa de nova subestação?</label>
+            <select id="newSubestacao" onchange="toggleCapacidadeSubestacao()">
+              <option value="">Não informado</option>
+              <option value="nao">Não</option>
+              <option value="sim">Sim</option>
+            </select>
+          </div>
+          <div class="field" id="fieldCapacidadeSub" style="display:none">
+            <label>Capacidade da subestação</label>
+            <input id="newCapacidadeSub" placeholder="Ex.: 500 kVA">
+          </div>
         </div>
       </div>
 
@@ -1047,6 +1301,7 @@ function obraToDb(o){
     regiao:o.regiao||'', tempo_obra:o.tempoObra||'', classificacao:o.classificacao||'',
     tipologia:o.tipologia||'', area_equivalente:Number(o.areaEquivalente)||0,
     area_construida:Number(o.areaConstruida)||0, ordem_sap:o.ordemSAP||'',
+    nova_subestacao:o.novaSubestacao||'', capacidade_subestacao:o.capacidadeSubestacao||'',
     cnpj:o.cnpj||'', endereco:o.endereco||''};
 }
 function obraFromDb(r){
@@ -1054,16 +1309,20 @@ function obraFromDb(r){
     tipo:r.tipo, cidade:r.cidade, uf:r.uf, regiao:r.regiao, tempoObra:r.tempo_obra,
     classificacao:r.classificacao, tipologia:r.tipologia,
     areaEquivalente:r.area_equivalente, areaConstruida:r.area_construida,
+    novaSubestacao:r.nova_subestacao||'', capacidadeSubestacao:r.capacidade_subestacao||'',
     ordemSAP:r.ordem_sap, cnpj:r.cnpj, endereco:r.endereco};
 }
 function demandaToDb(d){
   return {codigo:d.codigo, obra:d.obra, analista:d.analista||'',
+    analistas_comp:d.analistasComp||[],
     prioridade:d.prioridade||'Média', valor:d.valor||'—', prazo:d.prazo||'—',
     status:d.status, tipo:d.tipo, sprint:d.sprint||'',
     pendencia:!!d.pendencia, pendencia_desc:d.pendenciaDesc||''};
 }
 function demandaFromDb(r){
-  return {codigo:r.codigo, obra:r.obra, analista:r.analista, prioridade:r.prioridade,
+  return {codigo:r.codigo, obra:r.obra, analista:r.analista,
+    analistasComp:r.analistas_comp||[],
+    prioridade:r.prioridade,
     valor:r.valor, prazo:r.prazo, status:r.status, tipo:r.tipo, sprint:r.sprint,
     pendencia:r.pendencia, pendenciaDesc:r.pendencia_desc};
 }
@@ -1071,15 +1330,19 @@ function sprintToDb(s){return {nome:s.nome, inicio:s.inicio||null, fim:s.fim||nu
 function sprintFromDb(r){return {nome:r.nome, inicio:r.inicio, fim:r.fim, status:r.status};}
 function evToDb(obraId, ev){
   return {obra_id:obraId, obra_vals:ev.obra||[], outros_vals:ev.outros||[],
+    status_obra:ev.statusObra||[], status_outros:ev.statusOutros||[],
     area_eq:ev.areaEq||0, area_const:ev.areaConst||0,
     valor_total:ev.valorTotal||0, custo_m2:ev.custoM2||0};
 }
 function eiToDb(codigo, ei){
   return {demanda_codigo:codigo, descricao:ei.descricao||'', analista:ei.analista||'',
+    analistas_comp:ei.analistasComp||[],
     prioridade:ei.prioridade||'Média', sprint:ei.sprint||'',
+    data_prev_inicio:ei.dataPrevInicio||null,
     data_inicio:ei.dataInicio||null, data_prevista:ei.dataPrevista||null,
     data_meta_obras:ei.dataMetaObras||null, data_envio_obras:ei.dataEnvioObras||null,
     data_validacao_obras:ei.dataValidacaoObras||null, data_entrega_real:ei.dataEntregaReal||null,
+    nao_enviado_obras:!!ei.naoEnviadoObras,
     observacao:ei.observacao||'', projetos:ei.projetos||{},
     projetos_custom:ei.projetosCustom||[]};
 }
@@ -1121,15 +1384,24 @@ async function initDB(){
     else{ await _sb.from('sprints').insert(sprintsDefault.map(sprintToDb)); sprints=[...sprintsDefault]; }
     const {data:evData}=await _sb.from('ev_store').select('*');
     if(evData) evData.forEach(r=>{ evStore[r.obra_id]={obra:r.obra_vals||[],outros:r.outros_vals||[],
+      statusObra:r.status_obra||[],statusOutros:r.status_outros||[],
       areaEq:r.area_eq,areaConst:r.area_const,valorTotal:r.valor_total,custoM2:r.custo_m2}; });
     const {data:evVerData}=await _sb.from('ev_versions').select('*').order('versao');
     if(evVerData) evVersions = evVerData.map(evVersionFromDb);
+    try{
+      const {data:mlData}=await _sb.from('mov_log').select('*');
+      if(mlData) movLog = mlData.map(movLogFromDb);
+      const {data:dlData}=await _sb.from('date_log').select('*');
+      if(dlData) dateLog = dlData.map(dateLogFromDb);
+    }catch(e){ console.warn('Logs não carregados:', e); }
     const {data:fdData}=await _sb.from('form_data_ei').select('*');
     if(fdData) fdData.forEach(r=>{ formData[r.demanda_codigo]={ei:{
-      descricao:r.descricao||'', analista:r.analista||'', prioridade:r.prioridade||'Média',
-      sprint:r.sprint||'', dataInicio:r.data_inicio||'', dataPrevista:r.data_prevista||'',
+      descricao:r.descricao||'', analista:r.analista||'', analistasComp:r.analistas_comp||[], prioridade:r.prioridade||'Média',
+      sprint:r.sprint||'', dataPrevInicio:r.data_prev_inicio||'',
+      dataInicio:r.data_inicio||'', dataPrevista:r.data_prevista||'',
       dataMetaObras:r.data_meta_obras||'', dataEnvioObras:r.data_envio_obras||'',
       dataValidacaoObras:r.data_validacao_obras||'', dataEntregaReal:r.data_entrega_real||'',
+      naoEnviadoObras:!!r.nao_enviado_obras,
       observacao:r.observacao||'', projetos:r.projetos||{}, projetosCustom:r.projetos_custom||[]
     }}; });
     try {
@@ -1157,9 +1429,8 @@ async function initDB(){
 
 function renderAll(){
   fillAllSelects(); renderSprintSelects();
-  buildCostFields('obraCosts',obraCostFields); buildCostFields('otherCosts',otherCostFields);
-  document.querySelectorAll('#obraCosts input,#otherCosts input,#areaEquivalente')
-    .forEach(el=>el.addEventListener('input',calculateEV));
+  buildCostFields('obraCosts',obraCostFields,'Obra',0); buildCostFields('otherCosts',otherCostFields,'Outras Categorias',obraCostFields.length);
+  document.getElementById('areaEquivalente').addEventListener('input',calculateEV);
   renderObras(); renderKanban(); renderSprints(); renderConfigLists(); renderLegenda();
   if(typeof renderSprintTabs==='function') renderSprintTabs();
   aplicarPermissoes();
@@ -1295,7 +1566,7 @@ function openNovaDemanda(){
 
   // Limpa campos
   const ei = getEIData('__novo__');
-  renderAnalistaChips('');
+  renderAnalistaChips('', []);
   document.getElementById('ei_descricao').value = '';
   document.getElementById('ei_prioridade').value = 'Média';
   fillSelect('ei_sprint', sprints.map(s=>s.nome));
@@ -1307,6 +1578,9 @@ function openNovaDemanda(){
 
   _eiProjetosList = [...PROJETOS_PADRAO];
   _projAberto = null;
+  _grupoProjRecolhido = false;
+  const gp=document.getElementById('eiProjetosGrupo'); if(gp) gp.style.display='block';
+  const bg=document.getElementById('btnRecolherGrupo'); if(bg) bg.textContent='⯅ Recolher grupo';
   renderProjetosGrid(ei);
 
   trocarTipoAtividade(); // ajusta visibilidade conforme tipo
@@ -1329,6 +1603,37 @@ function avancarEtapa2(){
     alert('Informe a descrição da atividade.');
     return;
   }
+
+  // ITEM 13 + 2: cria a demanda AGORA (ao avançar), já contando nos KPIs,
+  // e a partir daqui todos os campos salvam automaticamente.
+  if(_eiModoCriacao){
+    const novoId = 'DEM-' + String(demandas.length + 1).padStart(3,'0');
+    const novaDem = {
+      codigo: novoId,
+      obra: _eiObraSelecionada.nome,
+      analista: document.getElementById('ei_analista').value || '—',
+      analistasComp: [],
+      prioridade: 'Média',
+      valor: '—',
+      prazo: '—',
+      status: 'Fazer',
+      tipo: tipo,
+      sprint: document.getElementById('ei_sprint').value
+    };
+    demandas.push(novaDem);
+    dbSave('demandas', demandaToDb(novaDem));
+    formData[novoId] = formData['__novo__'] || {ei:{}};
+    formData[novoId].ei.descricao = document.getElementById('ei_descricao').value.trim();
+    formData[novoId].ei.analista = document.getElementById('ei_analista').value || '';
+    formData[novoId].ei.sprint = document.getElementById('ei_sprint').value;
+    delete formData['__novo__'];
+    _eiCodigo = novoId;
+    _eiModoCriacao = false;
+    registrarMovimentacao(novoId, '—', 'Fazer');
+    dbSave('form_data_ei', eiToDb(novoId, formData[novoId].ei));
+    renderKanban(); // ITEM 13: já aparece nos cards
+  }
+
   // Resumo no topo da etapa 2
   document.getElementById('eiResumoTopo').style.display = 'flex';
   document.getElementById('ei_resumoDesc').textContent =
@@ -1336,6 +1641,85 @@ function avancarEtapa2(){
   document.getElementById('eiSub').textContent = 'Etapa 2 de 2 · Detalhamento';
   mostrarEtapa(2);
   setTimeout(()=>document.getElementById('ei_dataInicio').focus(), 60);
+}
+
+/* ══ ITEM 2: AUTOSAVE ══ */
+let _autosaveTimer = null;
+
+/* ══ ITEM 4: prefills de data + trava "não enviado p/ Obras" ══ */
+function addDias(dateStr, dias){
+  if(!dateStr) return '';
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate()+dias);
+  return d.toISOString().slice(0,10);
+}
+// Campo 6 = início real + 14 dias (só se vazio)
+function prefillEntrega(){
+  const ini = valOf('ei_dataInicio');
+  const prev = document.getElementById('ei_dataPrevista');
+  if(ini && prev && !prev.value){
+    prev.value = addDias(ini, 14);
+    prefillMetaObras();
+  }
+}
+// Campo 3 = entrega prevista - 2 dias (48h) (só se vazio)
+function prefillMetaObras(){
+  const prev = valOf('ei_dataPrevista');
+  const meta = document.getElementById('ei_dataMetaObras');
+  if(prev && meta && !meta.value){
+    meta.value = addDias(prev, -2);
+  }
+}
+// Checkbox: trava e limpa campos 4 e 5 enquanto marcada
+function toggleNaoEnviadoObras(){
+  const marcado = document.getElementById('ei_naoEnviadoObras').checked;
+  const c4 = document.getElementById('ei_dataEnvioObras');
+  const c5 = document.getElementById('ei_dataValidacaoObras');
+  c4.disabled = marcado;
+  c5.disabled = marcado;
+  if(marcado){ c4.value=''; c5.value=''; }
+}
+
+function autosaveEI(){
+  if(!_eiCodigo || _eiCodigo==='__novo__' || _eiModoCriacao) return;
+  clearTimeout(_autosaveTimer);
+  _autosaveTimer = setTimeout(()=>{
+    const ei = getEIData(_eiCodigo);
+    // Coleta todos os campos do formulário
+    ei.descricao       = valOf('ei_descricao');
+    ei.analista        = valOf('ei_analista');
+    ei.prioridade      = valOf('ei_prioridade');
+    ei.sprint          = valOf('ei_sprint');
+    ei.dataPrevInicio  = valOf('ei_dataPrevInicio');
+    ei.dataInicio      = valOf('ei_dataInicio');
+    ei.dataMetaObras   = valOf('ei_dataMetaObras');
+    ei.dataEnvioObras  = valOf('ei_dataEnvioObras');
+    ei.dataValidacaoObras = valOf('ei_dataValidacaoObras');
+    ei.dataPrevista    = valOf('ei_dataPrevista');
+    ei.dataEntregaReal = valOf('ei_dataEntregaReal');
+    ei.observacao      = valOf('ei_observacao');
+    ei.naoEnviadoObras = document.getElementById('ei_naoEnviadoObras') ? document.getElementById('ei_naoEnviadoObras').checked : false;
+    ei.analistasComp = _analistasSel.comp || [];
+    // Sync na demanda
+    const d = demandas.find(x=>x.codigo===_eiCodigo);
+    if(d){
+      d.analista=ei.analista||'—'; d.analistasComp=ei.analistasComp;
+      d.prioridade=ei.prioridade; d.sprint=ei.sprint;
+      dbSave('demandas', demandaToDb(d));
+    }
+    dbSave('form_data_ei', eiToDb(_eiCodigo, ei));
+    renderKanban();
+    mostrarIndicadorSalvo();
+  }, 700);
+}
+function valOf(id){ const el=document.getElementById(id); return el ? el.value : ''; }
+function mostrarIndicadorSalvo(){
+  const el = document.getElementById('eiAutosaveIndicator');
+  if(!el) return;
+  el.textContent = '✓ Salvo automaticamente';
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.style.opacity='0'; }, 1500);
 }
 
 function voltarEtapa1(){
@@ -1447,7 +1831,7 @@ function openEIForm(codigo){
   renderEIStatus(d);
 
   // Basic fields
-  renderAnalistaChips(ei.analista||'');
+  renderAnalistaChips(ei.analista||'', ei.analistasComp||[]);
   document.getElementById('ei_descricao').value = ei.descricao || '';
   document.getElementById('ei_observacao').value = ei.observacao || '';
   document.getElementById('ei_prioridade').value = ei.prioridade || d.prioridade || 'Média';
@@ -1457,12 +1841,16 @@ function openEIForm(codigo){
   document.getElementById('ei_sprint').value = ei.sprint || d.sprint || activeSprint();
   atualizarPeriodoSprintEI();
 
-  // Dates
-  ['ei_dataInicio','ei_dataPrevista','ei_dataMetaObras','ei_dataEnvioObras','ei_dataValidacaoObras','ei_dataEntregaReal']
+  // Dates (ordem 1-7)
+  ['ei_dataPrevInicio','ei_dataInicio','ei_dataMetaObras','ei_dataEnvioObras','ei_dataValidacaoObras','ei_dataPrevista','ei_dataEntregaReal']
     .forEach(id=>{
       const key = id.replace('ei_','');
       document.getElementById(id).value = ei[key] || '';
     });
+  // Checkbox "não enviado p/ Obras" + trava dos campos 4 e 5
+  document.getElementById('ei_naoEnviadoObras').checked = !!ei.naoEnviadoObras;
+  toggleNaoEnviadoObras();
+  snapshotDatas(); // ITEM 12: registra valores originais para detectar mudanças
   updateEIHints(d);
 
   // Projects
@@ -1471,6 +1859,9 @@ function openEIForm(codigo){
     ...(ei.projetosCustom||[]).map(cod=>({cod,nome:cod}))
   ];
   _projAberto = null;
+  _grupoProjRecolhido = false;
+  const gp=document.getElementById('eiProjetosGrupo'); if(gp) gp.style.display='block';
+  const bg=document.getElementById('btnRecolherGrupo'); if(bg) bg.textContent='⯅ Recolher grupo';
   renderProjetosGrid(ei);
 
   document.getElementById('eiOverlay').classList.add('open');
@@ -1505,26 +1896,42 @@ function renderEIStatus(d){
 }
 
 // Valida se a demanda pode ir para "Concluído" (EV preenchido)
-function podeConcluir(codigo){
-  const ev = getEVdaObraPorDemanda(codigo);
+// Retorna a lista de labels de itens ainda "Estimado" (pendentes) de uma obra
+function getItensPendentesEV(obraId){
+  const ev = evStore[obraId];
+  const statusObra   = (ev && ev.statusObra   && ev.statusObra.length)   ? ev.statusObra   : obraCostFields.map(()=>'Estimado');
+  const statusOutros = (ev && ev.statusOutros && ev.statusOutros.length) ? ev.statusOutros : otherCostFields.map(()=>'Estimado');
   const faltando = [];
-  if(!ev || !(ev.valorTotal > 0)) faltando.push('Valor total da obra');
-  if(!ev || !(ev.custoM2 > 0))   faltando.push('Custo por m²');
-  return { ok: faltando.length===0, faltando };
+  obraCostFields.forEach((label,i)=>{ if((statusObra[i]||'Estimado')==='Estimado') faltando.push(label); });
+  otherCostFields.forEach((label,i)=>{ if((statusOutros[i]||'Estimado')==='Estimado') faltando.push(label); });
+  return faltando;
 }
 
-function avisarEVincompleto(faltando){
-  alert('Não é possível concluir esta demanda.\n\nPreencha no EV da obra:\n• ' +
-    faltando.join('\n• ') +
-    '\n\nAbra o EV pelo botão dentro da demanda para preencher.');
+function podeConcluir(codigo){
+  const d = demandas.find(x=>x.codigo===codigo);
+  if(!d) return {ok:false, faltando:['Demanda não encontrada']};
+  const obra = obras.find(o=>o.nome===d.obra);
+  if(!obra) return {ok:false, faltando:['Obra vinculada não encontrada']};
+  const ev = evStore[obra.id];
+  if(!ev) return {ok:false, faltando:['O EV desta obra ainda não foi aberto/preenchido'], obraId: obra.id};
+
+  const faltando = getItensPendentesEV(obra.id);
+  return { ok: faltando.length===0, faltando, obraId: obra.id };
 }
 
-// Processa a conclusão: valida EV, pergunta pendência, registra.
+function avisarEVincompleto(faltando, obraId){
+  alert('Antes de concluir, revise o EV desta obra.\n\nOs seguintes itens ainda estão como "Estimado" — marque "Orçado", "Cotado" ou "Não se aplica" para cada um:\n\n• ' +
+    faltando.slice(0,8).join('\n• ') + (faltando.length>8 ? `\n… e mais ${faltando.length-8} item(ns)` : '') +
+    '\n\nO EV será aberto agora para você revisar.');
+  if(obraId) openEV(obraId);
+}
+
+// Processa a conclusão: valida EV linha a linha, pergunta pendência, registra.
 // Retorna true se a demanda foi concluída.
 function processarConclusao(codigo){
-  // 1. Bloqueio de EV (Valor total + Custo/m²)
+  // 1. Bloqueio de EV — nenhuma linha aplicável pode estar como "Estimado"
   const chk = podeConcluir(codigo);
-  if(!chk.ok){ avisarEVincompleto(chk.faltando); return false; }
+  if(!chk.ok){ avisarEVincompleto(chk.faltando, chk.obraId); return false; }
 
   // 2. Pergunta sobre pendência de cotação
   const d = demandas.find(x=>x.codigo===codigo);
@@ -1561,12 +1968,12 @@ let evVersions = []; // {obraId, versao, data, demandaCodigo, valorTotal, custoM
 function evVersionToDb(v){
   return {obra_id:v.obraId, versao:v.versao, data:v.data, demanda_codigo:v.demandaCodigo,
     valor_total:v.valorTotal, custo_m2:v.custoM2, area_eq:v.areaEq, area_const:v.areaConst,
-    obra_vals:v.obraVals||[], outros_vals:v.outrosVals||[]};
+    obra_vals:v.obraVals||[], outros_vals:v.outrosVals||[], tem_pendencia:!!v.temPendencia};
 }
 function evVersionFromDb(r){
   return {obraId:r.obra_id, versao:r.versao, data:r.data, demandaCodigo:r.demanda_codigo,
     valorTotal:r.valor_total, custoM2:r.custo_m2, areaEq:r.area_eq, areaConst:r.area_const,
-    obraVals:r.obra_vals||[], outrosVals:r.outros_vals||[]};
+    obraVals:r.obra_vals||[], outrosVals:r.outros_vals||[], temPendencia:!!r.tem_pendencia};
 }
 
 function criarVersaoEV(codigo){
@@ -1578,6 +1985,21 @@ function criarVersaoEV(codigo){
   if(!ev) return; // sem EV preenchido, não há o que versionar (não deveria ocorrer pois é bloqueado antes)
 
   const versaoNum = evVersions.filter(v=>v.obraId===obra.id).length + 1;
+
+  // ITEM 7/8: na primeira versão, perguntar sobre subestação se ainda não informado
+  if(versaoNum === 1 && !obra.novaSubestacao){
+    const precisa = confirm('📋 Cadastro complementar da obra\n\nEsta obra vai precisar de NOVA SUBESTAÇÃO?\n\nOK = Sim · Cancelar = Não');
+    if(precisa){
+      const cap = prompt('Qual a capacidade da subestação? (Ex.: 500 kVA)') || '';
+      obra.novaSubestacao = 'sim';
+      obra.capacidadeSubestacao = cap.trim();
+    } else {
+      obra.novaSubestacao = 'nao';
+      obra.capacidadeSubestacao = '';
+    }
+    dbSave('obras', obraToDb(obra));
+  }
+
   const novaVersao = {
     obraId: obra.id,
     versao: versaoNum,
@@ -1588,10 +2010,21 @@ function criarVersaoEV(codigo){
     areaEq: ev.areaEq||0,
     areaConst: ev.areaConst||0,
     obraVals: ev.obra||[],
-    outrosVals: ev.outros||[]
+    outrosVals: ev.outros||[],
+    temPendencia: temPendenciaEV(obra.id)
   };
   evVersions.push(novaVersao);
   dbSave('ev_versions', evVersionToDb(novaVersao));
+}
+
+function transicaoPermitida(deStatus, paraStatus){
+  // Concluir: só Gestão/Admin
+  if(paraStatus === 'Concluído') return pode(['Administrador','Gestão']);
+  // Sala Técnica → Obras: só Gestão/Admin
+  if(deStatus === 'Aguardando Validação Sala Técnica' && paraStatus === 'Aguardando Validação Obras')
+    return pode(['Administrador','Gestão']);
+  // Demais transições: qualquer usuário logado
+  return !!_currentUser;
 }
 
 function moverDemandaEI(codigo, novoStatus){
@@ -1599,10 +2032,18 @@ function moverDemandaEI(codigo, novoStatus){
   if(!d) return;
   const allowed = TRANSITIONS[d.status]||[];
   if(!allowed.includes(novoStatus)) return;
+  if(!transicaoPermitida(d.status, novoStatus)){
+    alert('Você não tem permissão para esta transição.\n\nApenas Gestão ou Administrador podem '+
+      (novoStatus==='Concluído' ? 'concluir demandas.' : 'mover de "Validação Sala Técnica" para "Validação Obras".'));
+    renderEIStatus(d); // reset do select
+    return;
+  }
   if(novoStatus === 'Concluído'){
     if(!processarConclusao(codigo)) return;
   }
+  const statusAnterior = d.status;
   d.status = novoStatus;
+  registrarMovimentacao(codigo, statusAnterior, novoStatus);
   dbSave('demandas', demandaToDb(d));
   renderKanban();
   renderEIStatus(d);
@@ -1631,13 +2072,23 @@ function onAutoDate(fieldId, targetStatus){
   const val = document.getElementById(fieldId).value;
   const d = demandas.find(x=>x.codigo===_eiCodigo);
   if(!d || !val) return;
+  if(d.status === targetStatus) return; // já está lá
+  if(!transicaoPermitida(d.status, targetStatus)){
+    alert('Você não tem permissão para esta transição.\n\nApenas Gestão ou Administrador podem '+
+      (targetStatus==='Concluído' ? 'concluir demandas.' : 'mover para "Validação Obras".'));
+    document.getElementById(fieldId).value = '';
+    return;
+  }
   if(targetStatus === 'Concluído'){
     if(!processarConclusao(_eiCodigo)){
       document.getElementById(fieldId).value = ''; // reverte a data
       return;
     }
   }
+  const anterior = d.status;
   d.status = targetStatus;
+  registrarMovimentacao(_eiCodigo, anterior, targetStatus);
+  dbSave('demandas', demandaToDb(d));
   renderKanban();
   renderEIStatus(d);
   updateEIHints(d);
@@ -1731,6 +2182,15 @@ function recolherTodosProjetos(){
   renderProjetos(getEIData(_eiCodigo));
 }
 
+// ITEM 15: colapsa/expande o grupo inteiro de projetos
+let _grupoProjRecolhido = false;
+function toggleGrupoProjetos(){
+  _grupoProjRecolhido = !_grupoProjRecolhido;
+  document.getElementById('eiProjetosGrupo').style.display = _grupoProjRecolhido ? 'none' : 'block';
+  document.getElementById('btnRecolherGrupo').textContent = _grupoProjRecolhido ? '⯆ Expandir grupo' : '⯅ Recolher grupo';
+  if(_grupoProjRecolhido){ _projAberto = null; }
+}
+
 function toggleProjetoEI(cod){ toggleProjetoCheck(cod); }
 
 function saveProjField(cod, field, value){
@@ -1816,19 +2276,50 @@ function salvarEI(){
 }
 
 
-function renderAnalistaChips(selecionado){
+/* Líder + complementares. _analistasSel = {lider:'Nome', comp:['A','B']} */
+let _analistasSel = {lider:'', comp:[]};
+
+function renderAnalistaChips(lider, comp){
+  _analistasSel = {lider: lider||'', comp: comp||[]};
   const wrap = document.getElementById('ei_analistaChips');
   if(!wrap) return;
-  wrap.innerHTML = analistas.map(a=>`
-    <button type="button" class="anal-chip ${a===selecionado?'on':''}"
-      onclick="selecionarAnalista('${a}')">${a}</button>`).join('');
-  document.getElementById('ei_analista').value = selecionado||'';
+  wrap.innerHTML = analistas.map(a=>{
+    const isLider = a===_analistasSel.lider;
+    const isComp = _analistasSel.comp.includes(a);
+    return `<button type="button" class="anal-chip ${isLider?'lider':''} ${isComp?'comp':''}"
+      onclick="selecionarAnalista('${a}')">${isLider?'⭐ ':''}${a}</button>`;
+  }).join('');
+  document.getElementById('ei_analista').value = _analistasSel.lider||'';
+  // Legenda
+  const leg = document.getElementById('analChipsLegenda');
+  if(leg){
+    if(_analistasSel.lider){
+      const compTxt = _analistasSel.comp.length ? ' · Complementares: '+_analistasSel.comp.join(', ') : '';
+      leg.textContent = '⭐ Líder: '+_analistasSel.lider + compTxt;
+    } else {
+      leg.textContent = 'Clique para definir o líder da demanda. Cliques seguintes adicionam analistas complementares.';
+    }
+  }
 }
 
 function selecionarAnalista(nome){
-  const current = document.getElementById('ei_analista').value;
-  const novo = current===nome ? '' : nome; // toggle
-  renderAnalistaChips(novo);
+  const s = _analistasSel;
+  if(s.lider === nome){
+    // Clicou no líder: remove; primeiro complementar (se houver) vira líder
+    const novoLider = s.comp.length ? s.comp[0] : '';
+    const novoComp = s.comp.slice(1);
+    renderAnalistaChips(novoLider, novoComp);
+  } else if(s.comp.includes(nome)){
+    // Clicou num complementar: remove
+    renderAnalistaChips(s.lider, s.comp.filter(a=>a!==nome));
+  } else if(!s.lider){
+    // Nenhum líder ainda: vira líder
+    renderAnalistaChips(nome, s.comp);
+  } else {
+    // Já tem líder: adiciona como complementar
+    renderAnalistaChips(s.lider, [...s.comp, nome]);
+  }
+  if(typeof autosaveEI === 'function') autosaveEI();
 }
 
 
@@ -1979,6 +2470,113 @@ async function toggleUsuario(id, ativar){
 }
 
 /* REGRAS DE TRANSIÇÃO */
+
+/* ══ ITEM 12: LOG DE MUDANÇA DE DATAS ══ */
+let dateLog = []; // {demandaCodigo, campo, de, para, motivo, quem, quando}
+let _datasOriginais = {}; // snapshot ao abrir o form
+
+const NOMES_CAMPOS_DATA = {
+  ei_dataPrevInicio:'1. Data prevista de início',
+  ei_dataInicio:'2. Data de início real',
+  ei_dataMetaObras:'3. Data prevista envio p/ Obras',
+  ei_dataEnvioObras:'4. Data real envio p/ Obras',
+  ei_dataValidacaoObras:'5. Data validação Obras',
+  ei_dataPrevista:'6. Data prevista da entrega',
+  ei_dataEntregaReal:'7. Data de entrega real'
+};
+
+function dateLogToDb(m){
+  return {demanda_codigo:m.demandaCodigo, campo:m.campo, de_valor:m.de||null,
+    para_valor:m.para||null, motivo:m.motivo||'', quem:m.quem, quando:m.quando};
+}
+function dateLogFromDb(r){
+  return {demandaCodigo:r.demanda_codigo, campo:r.campo, de:r.de_valor,
+    para:r.para_valor, motivo:r.motivo, quem:r.quem, quando:r.quando};
+}
+
+function snapshotDatas(){
+  _datasOriginais = {};
+  Object.keys(NOMES_CAMPOS_DATA).forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) _datasOriginais[id] = el.value;
+  });
+}
+
+// Chamada no onchange de cada campo de data (antes do autosave)
+function registrarMudancaData(input){
+  const id = input.id;
+  const anterior = _datasOriginais[id] || '';
+  const novo = input.value;
+  if(_eiModoCriacao || _eiCodigo==='__novo__') return; // criação: livre
+  if(anterior === novo) return; // sem mudança real
+  if(!anterior){ _datasOriginais[id] = novo; return; } // primeiro preenchimento: livre
+
+  // Mudança de data existente: só Gestão/Admin
+  if(!pode(['Administrador','Gestão'])){
+    alert('Apenas Gestão ou Administrador podem alterar datas já preenchidas.');
+    input.value = anterior; // reverte
+    return;
+  }
+  const motivo = prompt(
+    'Alterando "'+ (NOMES_CAMPOS_DATA[id]||id) +'"\n' +
+    'De: ' + (anterior?new Date(anterior+'T00:00:00').toLocaleDateString('pt-BR'):'—') +
+    ' → Para: ' + (novo?new Date(novo+'T00:00:00').toLocaleDateString('pt-BR'):'—') +
+    '\n\nMotivo da alteração (opcional):'
+  );
+  if(motivo === null){ input.value = anterior; return; } // cancelou
+  const reg = {
+    demandaCodigo:_eiCodigo, campo:NOMES_CAMPOS_DATA[id]||id,
+    de:anterior, para:novo, motivo:(motivo||'').trim(),
+    quem:_currentUser?_currentUser.nome:'Sistema', quando:new Date().toISOString()
+  };
+  dateLog.push(reg);
+  dbSave('date_log', dateLogToDb(reg));
+  _datasOriginais[id] = novo;
+}
+
+/* ══ ITEM 6 + 12: HISTÓRICO VISÍVEL ══ */
+function toggleHistoricoDemanda(){
+  const sec = document.getElementById('eiHistoricoSec');
+  const visivel = sec.style.display !== 'none';
+  if(visivel){ sec.style.display='none'; return; }
+  // Monta o histórico combinado (movimentos + datas)
+  const movs = movLog.filter(m=>m.demandaCodigo===_eiCodigo)
+    .map(m=>({quando:m.quando, quem:m.quem, txt:`Moveu de "${m.de}" para "${m.para}"`}));
+  const dats = dateLog.filter(m=>m.demandaCodigo===_eiCodigo)
+    .map(m=>({quando:m.quando, quem:m.quem,
+      txt:`Alterou ${m.campo}: ${m.de?new Date(m.de+'T00:00:00').toLocaleDateString('pt-BR'):'—'} → ${m.para?new Date(m.para+'T00:00:00').toLocaleDateString('pt-BR'):'—'}` +
+      (m.motivo?` · Motivo: "${m.motivo}"`:'')}));
+  const tudo = [...movs, ...dats].sort((a,b)=>new Date(b.quando)-new Date(a.quando));
+  document.getElementById('eiHistoricoLista').innerHTML = tudo.length
+    ? tudo.map(h=>`<div class="hist-item">
+        <div class="hist-quando">${new Date(h.quando).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="hist-txt"><strong>${h.quem}</strong> · ${h.txt}</div>
+      </div>`).join('')
+    : '<div style="text-align:center;color:var(--muted);padding:14px;font-size:12px">Nenhum registro ainda.</div>';
+  sec.style.display='block';
+}
+
+/* ══ ITEM 6: REGISTRO DE MOVIMENTAÇÕES ══ */
+let movLog = []; // {demandaCodigo, de, para, quem, quando}
+
+function movLogToDb(m){
+  return {demanda_codigo:m.demandaCodigo, de_status:m.de, para_status:m.para,
+    quem:m.quem, quando:m.quando};
+}
+function movLogFromDb(r){
+  return {demandaCodigo:r.demanda_codigo, de:r.de_status, para:r.para_status,
+    quem:r.quem, quando:r.quando};
+}
+function registrarMovimentacao(codigo, de, para){
+  const reg = {
+    demandaCodigo: codigo, de, para,
+    quem: _currentUser ? _currentUser.nome : 'Sistema',
+    quando: new Date().toISOString()
+  };
+  movLog.push(reg);
+  dbSave('mov_log', movLogToDb(reg));
+}
+
 const TRANSITIONS = {
   'Fazer':                             ['Fazendo','Cancelado'],
   'Fazendo':                           ['Pausado','Aguardando Validação Sala Técnica','Cancelado'],
@@ -2061,7 +2659,14 @@ function moverDemanda(codigo, novoStatus){
   if(!d) return;
   const allowed = TRANSITIONS[d.status] || [];
   if(!allowed.includes(novoStatus)) return; /* segurança */
+  if(!transicaoPermitida(d.status, novoStatus)){
+    alert('Você não tem permissão para esta transição.');
+    return;
+  }
+  const anterior = d.status;
   d.status = novoStatus;
+  registrarMovimentacao(codigo, anterior, novoStatus);
+  dbSave('demandas', demandaToDb(d));
   closeDrawer('demandaOverlay');
   renderKanban();
 }
@@ -2106,7 +2711,19 @@ function renderSprintSelects(){
   document.getElementById("newSprint").value=activeSprint();
   document.getElementById("activeSprintChip").textContent="Sprint atual: "+activeSprint();
 }
+/* ══ MENU MOBILE ══ */
+function toggleMobileMenu(){
+  document.querySelector('.sidebar').classList.toggle('mobile-open');
+  document.getElementById('mobileMenuOverlay').classList.toggle('visible');
+}
+function closeMobileMenu(){
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+  document.getElementById('mobileMenuOverlay').classList.remove('visible');
+}
+
 function showView(view){
+  closeMobileMenu(); // fecha o menu ao navegar no celular
+  if(view==='evs' && typeof renderListaEVs==='function') setTimeout(renderListaEVs, 30);
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   document.getElementById("view-"+view).classList.add("active");
@@ -2218,8 +2835,44 @@ function filteredDemandas(){
   const sprint=document.getElementById("sprintFilter").value;
   const analista=document.getElementById("analistaFilter").value;
   const tipo=document.getElementById("tipoAtividadeFilter").value;
-  return demandas.filter(d=>(sprint==="Todas"||d.sprint===sprint)&&(analista==="Todos"||d.analista===analista)&&(tipo==="Todos"||d.tipo===tipo));
+  const entrega=document.getElementById("entregaFilter") ? document.getElementById("entregaFilter").value : "";
+  return demandas.filter(d=>{
+    const okSprint = sprint==="Todas"||d.sprint===sprint;
+    // Analista: líder OU complementar
+    const okAnalista = analista==="Todos" || d.analista===analista || (d.analistasComp||[]).includes(analista);
+    const okTipo = tipo==="Todos"||d.tipo===tipo;
+    let okEntrega = true;
+    if(entrega){
+      const se = statusEntrega(d.codigo);
+      okEntrega = se ? se.classe===entrega : false;
+    }
+    return okSprint && okAnalista && okTipo && okEntrega;
+  });
 }
+
+/* ══ ITEM 11: STATUS DE ENTREGA DA DEMANDA ══ */
+// Retorna {classe, label} baseado em dataPrevista x dataEntregaReal (ou hoje)
+function statusEntrega(codigo){
+  const ei = (formData[codigo]||{}).ei || {};
+  const prevista = ei.dataPrevista;
+  if(!prevista) return null; // sem data prevista, sem status
+  const d = demandas.find(x=>x.codigo===codigo);
+  const concluida = d && d.status==='Concluído';
+  const ref = concluida && ei.dataEntregaReal
+    ? new Date(ei.dataEntregaReal+'T00:00:00')
+    : (()=>{ const h=new Date(); h.setHours(0,0,0,0); return h; })();
+  const prev = new Date(prevista+'T00:00:00');
+  const diffDias = Math.round((ref - prev) / 86400000); // >0 = atrasada
+
+  if(concluida){
+    if(diffDias <= 0) return {classe:'entregue-prazo', label:'✓ Entregue no prazo'};
+    return {classe:'entregue-atraso', label:`⚠ Entregue com ${diffDias} dia${diffDias>1?'s':''} de atraso`};
+  }
+  if(diffDias > 0) return {classe:'atrasada', label:`🔴 Atrasada há ${diffDias} dia${diffDias>1?'s':''}`};
+  if(diffDias >= -2) return {classe:'proximo', label:'🟠 Próximo da entrega'};
+  return {classe:'em-dia', label:'🟢 Em dia'};
+}
+
 function renderKanban(){
   const kanban=document.getElementById("kanban");
   const data=filteredDemandas();
@@ -2239,13 +2892,25 @@ function renderKanban(){
         const pendBadge = (concluida && item.pendencia)
           ? `<div class="task-pendencia" title="${(item.pendenciaDesc||'').replace(/"/g,'&quot;')}">⚠️ Pendência de cotação<span>${item.pendenciaDesc||''}</span></div>`
           : '';
+        // ITEM 11: badge de status de entrega
+        const se = statusEntrega(item.codigo);
+        const seBadge = se ? `<div class="task-entrega ${se.classe}">${se.label}</div>` : '';
+        // ITEM 16: se concluída, mostra data de conclusão em vez do prazo
+        const eiCard = (formData[item.codigo]||{}).ei || {};
+        let dataCard = '📅 ' + item.prazo;
+        if(concluida && eiCard.dataEntregaReal){
+          dataCard = '✅ Concluída em ' + new Date(eiCard.dataEntregaReal+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+        }
+        // ITEM 3: analistas complementares
+        const compTxt = (item.analistasComp && item.analistasComp.length)
+          ? ` <span class="task-comp">+${item.analistasComp.length}</span>` : '';
         return `<div class="task" onclick="openDemandaDrawer('${item.codigo}')">
         <div class="task-hd"><span class="task-code">${item.codigo}</span><span class="priority ${priorityClass(item.prioridade)}">${item.prioridade}</span></div>
         <div class="task-title">${item.obra}</div>
         <div class="task-attrs">
-          <div>👤 ${item.analista}</div><div>🏷 ${item.tipo}</div>
-          <div>⚡ ${item.sprint}</div><div>📅 ${item.prazo}</div>
-        </div>${evBadge}${pendBadge}</div>`;
+          <div>👤 ${item.analista}${compTxt}</div><div>🏷 ${item.tipo}</div>
+          <div>⚡ ${item.sprint}</div><div>${dataCard}</div>
+        </div>${seBadge}${evBadge}${pendBadge}</div>`;
       }).join("")||'<div class="empty">Nenhuma demanda</div>'}</div>`;
     kanban.appendChild(col);
   });
@@ -2324,7 +2989,10 @@ function renderObras(){
       <td style="font-family:'DM Mono',monospace;font-size:12px">${o.ordemSAP||"—"}</td>
       <td style="font-size:12px">${o.cnpj||"—"}</td>
       <td style="font-size:12px;min-width:200px">${o.endereco||"—"}</td>
-      <td><button class="action-btn" onclick="openEV('${o.id}')">Abrir EV</button></td>
+      <td><button class="action-btn" onclick="openEV('${o.id}')">Abrir EV</button>${
+        demandas.some(d=>d.obra===o.nome) && temPendenciaEV(o.id)
+          ? '<span class="ev-pend-dot" title="EV com itens pendentes de cotação">⚠</span>' : ''
+      }</td>
     </tr>`;
   }).join("");
 }
@@ -2420,12 +3088,18 @@ function openNovaObra(){
   updateKeyPreview();
   document.getElementById("novaObraOverlay").classList.add("open");
 }
+function toggleCapacidadeSubestacao(){
+  const v = document.getElementById('newSubestacao').value;
+  document.getElementById('fieldCapacidadeSub').style.display = v==='sim' ? 'block' : 'none';
+  if(v!=='sim') document.getElementById('newCapacidadeSub').value='';
+}
+
 function createObra(){
   const nome=document.getElementById("newNomeObra").value.trim();
   if(!nome){alert("Informe o nome da obra.");return}
   const id=document.getElementById("newObraId").value;
   const evNumber=id.replace("OBR-","EV-");
-  const novaObra={id,evId:evNumber,codigoOriginal:document.getElementById("newCodigoOriginal").value.trim(),nome,tipo:document.getElementById("newTipoUnidade").value,cidade:document.getElementById("newCidade").value.trim(),uf:document.getElementById("newUF").value,regiao:document.getElementById("newRegiao").value,tempoObra:document.getElementById("newTempoObra").value,classificacao:document.getElementById("newClassificacao").value,tipologia:document.getElementById("newTipologia").value};
+  const novaObra={id,evId:evNumber,codigoOriginal:document.getElementById("newCodigoOriginal").value.trim(),nome,tipo:document.getElementById("newTipoUnidade").value,cidade:document.getElementById("newCidade").value.trim(),uf:document.getElementById("newUF").value,regiao:document.getElementById("newRegiao").value,tempoObra:document.getElementById("newTempoObra").value,classificacao:document.getElementById("newClassificacao").value,tipologia:document.getElementById("newTipologia").value,novaSubestacao:document.getElementById("newSubestacao").value,capacidadeSubestacao:document.getElementById("newCapacidadeSub").value.trim()};
   obras.push(novaObra);
   dbSave("obras", obraToDb(novaObra));
   demandas.push({codigo:`DEM-${String(demandas.length+1).padStart(3,"0")}`,obra:nome,analista:document.getElementById("newAnalista").value,prioridade:"Média",valor:"R$ 0",prazo:"—",status:document.getElementById("newStatus").value,tipo:document.getElementById("newTipoAtividade").value,sprint:document.getElementById("newSprint").value});
@@ -2434,32 +3108,95 @@ function createObra(){
 }
 
 /* EV */
-const obraCostFields=["Fundações","Contenções","Estruturas","Adequações Civis","Instalações Elétricas","Instalações Hidrossanitárias","Instalações de Gases Medicinais","Instalações de Combate a Incêndio","Instalações de SPDA","Instalações de Climatização","Instalações de Exaustão","Infraestrutura de Dados/Voz/Seg. Patrimonial/CFTV/Chamada","Custos Indiretos"];
+const obraCostFields=["Fundações","Contenções","Estruturas","Adequações Civis","Adequações Civis Áreas Externas","Fachadas","Instalações Elétricas","Instalações Hidrossanitárias","Instalações de Gases Medicinais","Instalações de Combate a Incêndio","Instalações de SPDA","Instalações de Climatização","Instalações de Exaustão","Infraestrutura de Dados/Voz/Seg. Patrimonial/CFTV/Chamada","Custos Indiretos"];
 const otherCostFields=["Projetos Técnicos","Projetos Legalização","Dados e Voz/Segurança Patrimonial/Chamada Hospitalar","Equipamentos de Climatização","Artefatos em Inox","Marcenaria","Réguas Medicinais","Gerador/Subestação/Transformador/Cubículos","Elevadores/Plataforma Elevatória","Compressor/Bomba de Vácuo/Driox","IT Médico/Nobreak","ETE/ETA","Correio Pneumático","Controle de Acessos","Planejamento de Obras","Contas de Consumo","Comunicação Visual Externa e Interna","Quadros Elétricos","SIC's","Sistemas de Automação","Taxa de Risco (5%)","Blindagem","Paisagismo e/ou Compensação Ambiental","Câmara Fria"];
-function buildCostFields(cId,fields){const c=document.getElementById(cId);c.innerHTML="";fields.forEach(label=>{const r=document.createElement("div");r.className="cost-row";r.innerHTML=`<div class="cost-label">${label}</div><input type="number" min="0" step="0.01" value="0" />`;c.appendChild(r)})}
+
+/* ══ ITEM 10: COLAR VALORES MONETÁRIOS NO EV ══ */
+// Converte "R$ 1.234.567,89" / "1.234,56" / "1234.56" → número
+function parseMoedaBR(txt){
+  if(!txt) return NaN;
+  let s = String(txt).trim()
+    .replace(/R\$\s*/gi,'')
+    .replace(/\s/g,'');
+  // Se tem vírgula, assume formato BR: remove pontos de milhar, vírgula → ponto
+  if(s.includes(',')){
+    s = s.replace(/\./g,'').replace(',','.');
+  }
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+
+function handleMoedaPaste(e){
+  const txt = (e.clipboardData || window.clipboardData).getData('text');
+  const n = parseMoedaBR(txt);
+  if(!isNaN(n)){
+    e.preventDefault();
+    e.target.value = n;
+    e.target.dispatchEvent(new Event('input', {bubbles:true}));
+    if(typeof calculateEV === 'function') calculateEV();
+  }
+  // Se não parseou, deixa o comportamento padrão
+}
+
+const STATUS_EV = ['Estimado','Orçado','Cotado','Não se aplica'];
+function evStatusSlug(s){ return {'Estimado':'estimado','Orçado':'orcado','Cotado':'cotado','Não se aplica':'na'}[s] || 'estimado'; }
+
+function buildCostFields(cId,fields,sectionLabel,itemOffset){
+  const c=document.getElementById(cId);
+  c.innerHTML='';
+  const headRow=document.createElement('tr');
+  headRow.className='ev-section-head';
+  headRow.innerHTML=`<td colspan="6">${sectionLabel}</td>`;
+  c.appendChild(headRow);
+  fields.forEach((label,i)=>{
+    const itemNum = itemOffset + i + 1;
+    const r=document.createElement('tr');
+    r.innerHTML=`
+      <td class="ev-row-item">${itemNum}</td>
+      <td class="ev-row-desc">${label}</td>
+      <td class="ev-row-valor"><input type="number" min="0" step="0.01" value="0" oninput="calculateEV()" onpaste="handleMoedaPaste(event)"></td>
+      <td class="ev-row-pct" data-pct>0,00%</td>
+      <td class="ev-row-status"><select data-status onchange="calculateEV()">${STATUS_EV.map(s=>`<option value="${s}">${s}</option>`).join('')}</select></td>
+      <td class="ev-row-m2" data-m2>R$ 0</td>`;
+    c.appendChild(r);
+  });
+}
 function moneyBR(v){return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
 
 /* ══ GESTÃO DE EVs — busca por obra, lista de versões ══ */
-function buscarObraEVs(){
-  const q = document.getElementById('evObraSearch').value.toLowerCase().trim();
-  const resultsEl = document.getElementById('evObraResultados');
-  document.getElementById('evVersoesPanel').style.display = 'none';
-  if(!q){ resultsEl.innerHTML=''; return; }
-  const matches = obras.filter(o=>{
-    const chave = gerarChave(o);
-    return [o.nome,o.cidade,o.uf,o.tipo,chave].join(' ').toLowerCase().includes(q);
-  }).slice(0,10);
-  if(matches.length===0){
-    resultsEl.innerHTML = '<div class="empty-state" style="padding:16px">Nenhuma obra encontrada.</div>';
+function renderListaEVs(){
+  const q = (document.getElementById('evObraSearch').value||'').toLowerCase().trim();
+  // Obras que já têm EV preenchido (no evStore) ou versões geradas
+  const comEV = obras.filter(o=> evStore[o.id] || evVersions.some(v=>v.obraId===o.id));
+  const filtradas = q
+    ? comEV.filter(o=>[o.nome,o.cidade,o.uf,gerarChave(o)].join(' ').toLowerCase().includes(q))
+    : comEV;
+
+  const body = document.getElementById('evListaBody');
+  if(filtradas.length===0){
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:26px;color:var(--muted)">'+
+      (comEV.length===0
+        ? 'Nenhuma obra possui EV ainda.<br>O EV é criado ao ser preenchido pela primeira vez dentro de uma demanda.'
+        : 'Nenhuma obra encontrada com esse filtro.')+'</td></tr>';
     return;
   }
-  resultsEl.innerHTML = matches.map(o=>{
-    const chave = gerarChave(o);
-    const nVersoes = evVersions.filter(v=>v.obraId===o.id).length;
-    return `<div class="obra-item" onclick="verVersoesEV('${o.id}')" style="cursor:pointer">
-      <div class="obra-item-nome">${o.nome}</div>
-      <div class="obra-item-chave">${chave} · ${o.cidade||'—'}/${o.uf||'—'} · ${nVersoes} ${nVersoes===1?'versão':'versões'}</div>
-    </div>`;
+  body.innerHTML = filtradas.map(o=>{
+    const versoes = evVersions.filter(v=>v.obraId===o.id).sort((a,b)=>b.versao-a.versao);
+    const atual = versoes[0] || null;
+    const ev = evStore[o.id];
+    const valor = ev ? (ev.valorTotal||0) : (atual ? atual.valorTotal||0 : 0);
+    const dataAtt = atual ? new Date(atual.data+'T00:00:00').toLocaleDateString('pt-BR') : 'Rascunho';
+    const rev = atual ? 'REV'+String(atual.versao).padStart(2,'0') : 'REV00';
+    const pend = temPendenciaEV(o.id);
+    return `<tr style="cursor:pointer" onclick="openEV('${o.id}')">
+      <td style="font-weight:700;color:var(--blue-700)">${o.nome}</td>
+      <td>${o.cidade||'—'}/${o.uf||'—'}</td>
+      <td><span class="badge badge-blue">${rev}</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${dataAtt}</td>
+      <td style="font-weight:700;color:var(--green)">${moneyBR(valor)}</td>
+      <td>${pend?'<span class="badge" style="background:var(--orange-50);color:var(--orange-700)">⚠ Pendente</span>':'<span class="badge badge-green">✓ OK</span>'}</td>
+      <td><button class="link-btn" onclick="event.stopPropagation();verVersoesEV('${o.id}')">${versoes.length} ${versoes.length===1?'versão':'versões'}</button></td>
+    </tr>`;
   }).join('');
 }
 
@@ -2474,7 +3211,7 @@ function verVersoesEV(obraId){
 
   if(versoes.length===0){
     document.getElementById('evVersoesTable').innerHTML =
-      '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma versão registrada ainda.<br>As versões são criadas automaticamente quando uma demanda vinculada a esta obra é concluída.</td></tr>';
+      '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--muted)">Nenhuma versão registrada ainda.<br>As versões são criadas automaticamente quando uma demanda vinculada a esta obra é concluída.</td></tr>';
     return;
   }
   document.getElementById('evVersoesTable').innerHTML = versoes.map(v=>`
@@ -2484,6 +3221,7 @@ function verVersoesEV(obraId){
       <td><button class="link-btn" onclick="abrirDemandaOrigemEV('${v.demandaCodigo}')">${v.demandaCodigo}</button></td>
       <td style="font-weight:700;color:var(--green)">${moneyBR(v.valorTotal||0)}</td>
       <td style="font-family:'DM Mono',monospace">${moneyBR(v.custoM2||0)}</td>
+      <td>${v.temPendencia?'<span class="badge" style="background:var(--orange-50);color:var(--orange-700)">⚠ Pendente</span>':'<span class="badge badge-green">✓ Completo</span>'}</td>
     </tr>`).join('');
 }
 
@@ -2495,11 +3233,98 @@ function abrirDemandaOrigemEV(codigo){
 
 
 function sumInputs(sel){let t=0;document.querySelectorAll(sel).forEach(i=>t+=Number(i.value||0));return t}
+
+let _evMostrarNA = false; // toggle: mostrar linhas "Não se aplica"
+
+function toggleMostrarNA(){
+  _evMostrarNA = !_evMostrarNA;
+  calculateEV();
+}
+
 function calculateEV(){
-  const vo=sumInputs("#obraCosts input"),ou=sumInputs("#otherCosts input"),total=vo+ou;
-  const aeq=Number(document.getElementById("areaEquivalente").value||0),m2=aeq>0?total/aeq:0;
-  document.getElementById("sumValorObra").textContent=moneyBR(vo);document.getElementById("sumOutros").textContent=moneyBR(ou);
-  document.getElementById("sumEV").textContent=moneyBR(total);document.getElementById("sumM2").textContent=moneyBR(m2);
+  const obraRows = [...document.querySelectorAll('#obraCosts tr')].filter(r=>r.querySelector('input'));
+  const otherRows = [...document.querySelectorAll('#otherCosts tr')].filter(r=>r.querySelector('input'));
+  const allRows = [...obraRows, ...otherRows];
+
+  // Aplica classe de status + visibilidade das linhas N/A
+  let countNA = 0;
+  allRows.forEach(row=>{
+    const sel = row.querySelector('select[data-status]');
+    const status = sel ? sel.value : 'Estimado';
+    const slug = evStatusSlug(status);
+    row.className = row.className.replace(/\bev-status-\w+\b/g,'').trim();
+    row.classList.add('ev-status-'+slug);
+    const isNA = status === 'Não se aplica';
+    if(isNA) countNA++;
+    row.style.display = (isNA && !_evMostrarNA) ? 'none' : '';
+    row.classList.toggle('ev-row-na', isNA);
+  });
+
+  // Toggle de exibição de N/A
+  const toggleEl = document.getElementById('evToggleNA');
+  if(toggleEl){
+    toggleEl.style.display = countNA>0 ? 'inline-flex' : 'none';
+    toggleEl.textContent = _evMostrarNA
+      ? `🙈 Ocultar ${countNA} item(ns) não aplicável(is)`
+      : `👁 Mostrar ${countNA} item(ns) não aplicável(is)`;
+  }
+
+  // Soma apenas linhas que NÃO são "Não se aplica"
+  function somaValida(rows){
+    let t=0;
+    rows.forEach(row=>{
+      const sel = row.querySelector('select[data-status]');
+      if(sel && sel.value==='Não se aplica') return;
+      const inp = row.querySelector('input');
+      t += Number(inp.value||0);
+    });
+    return t;
+  }
+  const vo = somaValida(obraRows);
+  const ou = somaValida(otherRows);
+  const total = vo + ou;
+  const aeq = Number(document.getElementById('areaEquivalente').value||0);
+  const m2 = aeq>0 ? total/aeq : 0;
+
+  document.getElementById('sumValorObra').textContent=moneyBR(vo);
+  document.getElementById('sumOutros').textContent=moneyBR(ou);
+  document.getElementById('sumEV').textContent=moneyBR(total);
+  document.getElementById('sumM2').textContent=moneyBR(m2);
+
+  // % e R$/m² por linha (N/A mostra "—")
+  allRows.forEach(row=>{
+    const sel = row.querySelector('select[data-status]');
+    const inp = row.querySelector('input');
+    const isNA = sel && sel.value==='Não se aplica';
+    if(isNA){
+      row.querySelector('[data-pct]').textContent = '—';
+      row.querySelector('[data-m2]').textContent = '—';
+      return;
+    }
+    const valor = Number(inp.value||0);
+    const pct = total>0 ? (valor/total*100) : 0;
+    const rm2 = aeq>0 ? valor/aeq : 0;
+    row.querySelector('[data-pct]').textContent = pct.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+    row.querySelector('[data-m2]').textContent = moneyBR(rm2);
+  });
+
+  // Total geral e total sem taxa de risco
+  let taxaRisco = 0;
+  otherRows.forEach((row,i)=>{
+    const sel = row.querySelector('select[data-status]');
+    if(otherCostFields[i]==='Taxa de Risco (5%)' && !(sel && sel.value==='Não se aplica')){
+      taxaRisco = Number(row.querySelector('input').value||0);
+    }
+  });
+  const totalSemRisco = total - taxaRisco;
+  const m2SemRisco = aeq>0 ? totalSemRisco/aeq : 0;
+
+  document.getElementById('evTotalGeral').textContent = moneyBR(total);
+  document.getElementById('evTotalM2').textContent = moneyBR(m2);
+  document.getElementById('evTotalSemRisco').textContent = moneyBR(totalSemRisco);
+  document.getElementById('evTotalSemRiscoM2').textContent = moneyBR(m2SemRisco);
+  const pctSemRisco = total>0 ? (totalSemRisco/total*100) : 0;
+  document.getElementById('evTotalSemRiscoPct').textContent = pctSemRisco.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
 }
 function abrirEVdaDemanda(){
   // Descobre a obra vinculada à demanda em edição
@@ -2522,10 +3347,11 @@ const evStore = {}; // evStore[obraId] = {obra:[...], outros:[...], areaEq, area
 let _evObraAtual = null;
 
 function openEV(obraId){
+  _evMostrarNA = false;
   const obra=obras.find(o=>o.id===obraId);if(!obra)return;
   _evObraAtual = obraId;
   const chave=gerarChave(obra);
-  document.getElementById("evTitle").textContent="EV — "+obra.nome;
+  document.getElementById("evTitle").textContent=obra.nome;
   document.getElementById("evSubtitle").textContent=`${chave} · ${obra.tipo||"—"} · ${obra.cidade||"—"}/${obra.uf||"—"}`;
 
   const saved = evStore[obraId];
@@ -2533,20 +3359,55 @@ function openEV(obraId){
   document.getElementById("areaEquivalente").value = saved ? (saved.areaEq||0) : (obra.areaEquivalente||0);
   document.getElementById("areaConstruida").value  = saved ? (saved.areaConst||0) : (obra.areaConstruida||0);
 
-  // Custos: restaura valores salvos ou zera
+  // Custos: restaura valores e status salvos ou zera
   const obraInputs = document.querySelectorAll("#obraCosts input");
   const otherInputs = document.querySelectorAll("#otherCosts input");
+  const obraSelects = document.querySelectorAll("#obraCosts select[data-status]");
+  const otherSelects = document.querySelectorAll("#otherCosts select[data-status]");
   obraInputs.forEach((inp,i)=> inp.value = saved && saved.obra ? (saved.obra[i]||0) : 0);
   otherInputs.forEach((inp,i)=> inp.value = saved && saved.outros ? (saved.outros[i]||0) : 0);
+  obraSelects.forEach((sel,i)=> sel.value = saved && saved.statusObra ? (saved.statusObra[i]||'Estimado') : 'Estimado');
+  otherSelects.forEach((sel,i)=> sel.value = saved && saved.statusOutros ? (saved.statusOutros[i]||'Estimado') : 'Estimado');
+
+  // Cabeçalho: REV (número da próxima versão) e data
+  const versoesExistentes = evVersions.filter(v=>v.obraId===obraId).length;
+  document.getElementById('evRevBadge').textContent = 'REV' + String(versoesExistentes).padStart(2,'0');
+  document.getElementById('evDocDate').textContent = new Date().toLocaleDateString('pt-BR');
+
+  // Badge de pendência (só se a obra tiver demanda vinculada)
+  atualizarBadgePendenciaEV(obraId);
 
   calculateEV();
   document.getElementById("evOverlay").classList.add("open");
+}
+
+function atualizarBadgePendenciaEV(obraId){
+  const obra = obras.find(o=>o.id===obraId);
+  const badge = document.getElementById('evPendBadge');
+  if(!obra){ badge.style.display='none'; return; }
+  const temDemanda = demandas.some(d=>d.obra===obra.nome);
+  if(!temDemanda){ badge.style.display='none'; return; }
+  const pendente = temPendenciaEV(obraId);
+  badge.style.display = 'block';
+  badge.className = 'ev-doc-pendbadge ' + (pendente ? 'pendente' : 'completo');
+  badge.textContent = pendente ? '⚠ Com pendências' : '✓ Cotação completa';
+}
+
+// Regra: pendência só existe se a obra tiver demanda vinculada E algum item aplicável estiver "Estimado"
+function temPendenciaEV(obraId){
+  const obra = obras.find(o=>o.id===obraId);
+  if(!obra) return false;
+  const temDemanda = demandas.some(d=>d.obra===obra.nome);
+  if(!temDemanda) return false;
+  return getItensPendentesEV(obraId).length > 0;
 }
 
 function salvarEV(){
   if(!_evObraAtual){ closeDrawer("evOverlay"); return; }
   const obraVals  = [...document.querySelectorAll("#obraCosts input")].map(i=>Number(i.value||0));
   const otherVals = [...document.querySelectorAll("#otherCosts input")].map(i=>Number(i.value||0));
+  const statusObra   = [...document.querySelectorAll("#obraCosts select[data-status]")].map(s=>s.value);
+  const statusOutros = [...document.querySelectorAll("#otherCosts select[data-status]")].map(s=>s.value);
   const areaEq    = Number(document.getElementById("areaEquivalente").value||0);
   const areaConst = Number(document.getElementById("areaConstruida").value||0);
   const valorTotal = obraVals.reduce((a,b)=>a+b,0) + otherVals.reduce((a,b)=>a+b,0);
@@ -2554,6 +3415,7 @@ function salvarEV(){
 
   evStore[_evObraAtual] = {
     obra: obraVals, outros: otherVals,
+    statusObra, statusOutros,
     areaEq, areaConst, valorTotal, custoM2
   };
   // Reflete áreas de volta na obra
@@ -2571,13 +3433,17 @@ function salvarEVrascunho(){
   if(!_evObraAtual) return;
   const obraVals  = [...document.querySelectorAll("#obraCosts input")].map(i=>Number(i.value||0));
   const otherVals = [...document.querySelectorAll("#otherCosts input")].map(i=>Number(i.value||0));
+  const statusObra   = [...document.querySelectorAll("#obraCosts select[data-status]")].map(s=>s.value);
+  const statusOutros = [...document.querySelectorAll("#otherCosts select[data-status]")].map(s=>s.value);
   const areaEq    = Number(document.getElementById("areaEquivalente").value||0);
   const areaConst = Number(document.getElementById("areaConstruida").value||0);
   const valorTotal = obraVals.reduce((a,b)=>a+b,0) + otherVals.reduce((a,b)=>a+b,0);
   const custoM2 = areaEq>0 ? valorTotal/areaEq : 0;
-  evStore[_evObraAtual] = { obra:obraVals, outros:otherVals, areaEq, areaConst, valorTotal, custoM2 };
+  evStore[_evObraAtual] = { obra:obraVals, outros:otherVals, statusObra, statusOutros, areaEq, areaConst, valorTotal, custoM2 };
   const obra = obras.find(o=>o.id===_evObraAtual);
   if(obra){ obra.areaEquivalente=areaEq; obra.areaConstruida=areaConst; }
+  dbSave('ev_store', evToDb(_evObraAtual, evStore[_evObraAtual]));
+  atualizarBadgePendenciaEV(_evObraAtual);
   // feedback simples
   const btn = event && event.target;
   if(btn){ const t=btn.textContent; btn.textContent='✓ Salvo'; setTimeout(()=>btn.textContent=t,1200); }
@@ -2600,7 +3466,8 @@ document.getElementById("regiaoFilter").addEventListener("change",renderObras);
 document.getElementById("sprintFilter").addEventListener("change",()=>{renderKanban();if(_viewMode==="lista")renderLista();});
 document.getElementById("analistaFilter").addEventListener("change",()=>{renderKanban();});
 document.getElementById("tipoAtividadeFilter").addEventListener("change",()=>{renderKanban();});
-["evOverlay","novaObraOverlay","demandaOverlay","eiOverlay"].forEach(id=>document.getElementById(id).addEventListener("click",e=>{if(e.target.id===id)closeDrawer(id)}));
+document.getElementById("entregaFilter").addEventListener("change",()=>{renderKanban();});
+/* Item 1: drawers só fecham pelo botão X, não ao clicar fora */
 ["newTipoUnidade","newUF","newClassificacao","newTipologia"].forEach(id=>document.getElementById(id).addEventListener("change",updateKeyPreview));
 
 
